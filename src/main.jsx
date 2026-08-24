@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './auth/AuthProvider.jsx'
+import AuthGate from './auth/AuthGate'
 
 const rootElement = document.getElementById('root')
 
@@ -15,7 +16,9 @@ createRoot(rootElement).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <App />
+        <AuthGate>
+          <App />
+        </AuthGate>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
