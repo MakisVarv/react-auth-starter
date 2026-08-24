@@ -1,7 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 /** @import { LoginCredentials, AuthContextValue, User } from './types.js' */
 import { AuthContext } from './AuthContext'
-import { login as loginRequest, logout as logoutRequest } from './authService'
+import {
+  login as loginRequest,
+  logout as logoutRequest,
+  refresh,
+  getCurrentUser,
+} from './authService'
 
 /**
  * @param {{ children: import('react').ReactNode }} props
@@ -13,7 +18,30 @@ export function AuthProvider({ children }) {
   const [accessToken, setAccessToken] = useState(
     /** @type {string | null} */ (null),
   )
+  const hasRestoredSession = useRef(false)
 
+  useEffect(() => {
+    if (hasRestoredSession.current) {
+      return
+    }
+    hasRestoredSession.current = true
+    async function restoreSession() {
+      setIsAuthLoading(true)
+      try {
+        const token = await refresh()
+        if (!token) return
+        const user = await getCurrentUser(token)
+        setUser(user)
+        setAccessToken(token)
+      } catch (e) {
+        setUser(null)
+        setAccessToken(null)
+      } finally {
+        setIsAuthLoading(false)
+      }
+    }
+    restoreSession()
+  }, [])
   /**
    * @param {LoginCredentials} credentials
    * @returns {Promise<User>}
