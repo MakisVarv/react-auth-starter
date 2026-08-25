@@ -5,6 +5,7 @@ import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './auth/AuthProvider.jsx'
 import AuthGate from './auth/AuthGate'
+import { Toaster } from 'sonner'
 
 const rootElement = document.getElementById('root')
 
@@ -15,6 +16,7 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <StrictMode>
     <BrowserRouter>
+      <Toaster />
       <AuthProvider>
         <AuthGate>
           <App />
