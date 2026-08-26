@@ -2,9 +2,10 @@ import { Route, Routes } from 'react-router-dom'
 import MainLayout from './layouts/MainLayout'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
-import ProtectedRoute from './auth/ProtectedRoute'
-import GuestOnlyRoute from './auth/GuestOnlyRoute'
+import ProtectedRoute from './auth/guards/ProtectedRoute'
+import GuestOnlyRoute from './auth/guards/GuestOnlyRoute'
 import DashboardPage from './pages/DashboardPage'
+import PermissionRoute from './auth/guards/PermissionRoute'
 
 function App() {
   return (
@@ -21,9 +22,9 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
+            <PermissionRoute permission="dashboard.read">
               <DashboardPage />
-            </ProtectedRoute>
+            </PermissionRoute>
           }
         />
         <Route
