@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../auth/useAuth'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { AppError } from '../api/errors'
 import { toast } from 'sonner'
 
@@ -13,14 +13,16 @@ function LoginPage() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
-
+  const location = useLocation()
+  const from = location.state?.from
+  /** @param {import('react').SubmitEvent<HTMLFormElement>} e */
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setIsSubmitting(true)
     try {
       await login(form)
-      navigate('/')
+      navigate(from ?? '/', { replace: true })
     } catch (e) {
       if (e instanceof AppError) {
         if (e.status === 401) {
@@ -35,6 +37,7 @@ function LoginPage() {
       setIsSubmitting(false)
     }
   }
+  /** @param {import('react').ChangeEvent<HTMLInputElement>} e */
   function handleChange(e) {
     const { name, value } = e.target
 
