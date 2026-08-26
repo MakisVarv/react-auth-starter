@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import ProtectedRoute from './auth/ProtectedRoute'
 import GuestOnlyRoute from './auth/GuestOnlyRoute'
+import DashboardPage from './pages/DashboardPage'
 
 function App() {
   return (
@@ -14,6 +15,14 @@ function App() {
           element={
             <ProtectedRoute>
               <HomePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
             </ProtectedRoute>
           }
         />
