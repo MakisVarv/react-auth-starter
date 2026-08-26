@@ -3,6 +3,7 @@ import MainLayout from './layouts/MainLayout'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import ProtectedRoute from './auth/ProtectedRoute'
+import GuestOnlyRoute from './auth/GuestOnlyRoute'
 
 function App() {
   return (
@@ -16,7 +17,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/login"
+          element={
+            <GuestOnlyRoute>
+              <LoginPage />
+            </GuestOnlyRoute>
+          }
+        />
       </Route>
     </Routes>
   )

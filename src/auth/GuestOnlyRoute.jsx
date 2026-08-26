@@ -4,12 +4,14 @@ import { Navigate } from 'react-router-dom'
  * @param {{ children: import('react').ReactNode }} props
  */
 
-function ProtectedRoute({ children }) {
+function GuestOnlyRoute({ children }) {
   const { user } = useAuth()
 
-  if (user === null) {
-    return <Navigate to="/login" replace />
+  if (user !== null) {
+    return <Navigate to="/" replace />
   }
+
   return children
 }
-export default ProtectedRoute
+
+export default GuestOnlyRoute
