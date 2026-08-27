@@ -1,12 +1,21 @@
 import apiClient from '../api/apiClient'
 import { getCookie } from '../utils/cookies'
-/** @import { LoginCredentials, LoginResponse, User } from './types.js' */
+/** @import { RegisterCredentials, LoginCredentials, LoginResponse, User } from './types.js' */
 /**
  * @param {LoginCredentials} credentials
  * @returns {Promise<LoginResponse>}
  */
 export async function login(credentials) {
   const response = await apiClient.post('/auth/login', credentials)
+
+  return response.data
+}
+/**
+ * @param {RegisterCredentials} credentials
+ * @returns {Promise<User>}
+ */
+export async function register(credentials) {
+  const response = await apiClient.post('/auth/register', credentials)
 
   return response.data
 }
