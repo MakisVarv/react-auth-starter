@@ -3,6 +3,7 @@
  * @property {string} email
  * @property {string} password
  */
+
 /**
  * @typedef {Object} RegisterCredentials
  * @property {string} first_name

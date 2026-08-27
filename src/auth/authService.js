@@ -1,6 +1,7 @@
 import apiClient from '../api/apiClient'
 import { getCookie } from '../utils/cookies'
 /** @import { RegisterCredentials, LoginCredentials, LoginResponse, User } from './types.js' */
+
 /**
  * @param {LoginCredentials} credentials
  * @returns {Promise<LoginResponse>}
