@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { useAuth } from '../auth/useAuth'
+import { useAuth } from '../../auth/useAuth'
 import { toast } from 'sonner'
-import { AppError } from '../api/errors'
-/** @import { UpdateProfileData } from '../auth/types.js' */
+import { AppError } from '../../../shared/api/errors'
+/** @import { UpdateProfileData } from '../../auth/types.js' */
 function ProfilePage() {
   const { user, updateProfile } = useAuth()
   const [form, setForm] = useState({

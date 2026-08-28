@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { AppError } from '../api/errors'
-import { register } from '../auth/authService.js'
+import { AppError } from '../../../shared/api/errors'
+import { register } from '../authService.js'
 import { toast } from 'sonner'
-/** @import { RegisterCredentials } from '../auth/types.js' */
+/** @import { RegisterCredentials } from '../types.js' */
 function RegisterPage() {
   const [form, setForm] = useState({
     first_name: '',

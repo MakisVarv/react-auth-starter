@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { useAuth } from '../auth/useAuth'
+import { useAuth } from '../useAuth'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { AppError } from '../api/errors'
+import { AppError } from '../../../shared/api/errors'
 import { toast } from 'sonner'
 
 function LoginPage() {

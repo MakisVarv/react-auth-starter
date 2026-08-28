@@ -1,5 +1,5 @@
-import apiClient from '../api/apiClient'
-import { getCookie } from '../utils/cookies'
+import apiClient from '../../shared/api/apiClient'
+import { getCookie } from '../../shared/utils/cookies'
 /** @import { RegisterCredentials, UpdateProfileData, LoginCredentials, LoginResponse, User } from './types.js' */
 
 /**

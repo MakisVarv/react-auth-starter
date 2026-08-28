@@ -1,13 +1,13 @@
 import { Route, Routes } from 'react-router-dom'
 import MainLayout from './layouts/MainLayout'
 import HomePage from './pages/HomePage'
-import LoginPage from './pages/LoginPage'
-import ProtectedRoute from './auth/guards/ProtectedRoute'
-import GuestOnlyRoute from './auth/guards/GuestOnlyRoute'
-import DashboardPage from './pages/DashboardPage'
-import PermissionRoute from './auth/guards/PermissionRoute'
-import RegisterPage from './pages/RegisterPage'
-import ProfilePage from './pages/ProfilePage'
+import LoginPage from './features/auth/pages/LoginPage'
+import ProtectedRoute from './features/auth/guards/ProtectedRoute'
+import GuestOnlyRoute from './features/auth/guards/GuestOnlyRoute'
+import DashboardPage from './features/dashboard/DashboardPage'
+import PermissionRoute from './features/auth/guards/PermissionRoute'
+import RegisterPage from './features/auth/pages/RegisterPage'
+import ProfilePage from './features/account/pages/ProfilePage'
 
 function App() {
   return (
