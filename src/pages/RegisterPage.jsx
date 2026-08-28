@@ -67,7 +67,10 @@ function RegisterPage() {
         <h2 className="mb-6 text-2xl font-semibold tracking-tight text-slate-900">
           Register
         </h2>
-        <label className="mb-4 w-full text-sm" htmlFor="first_name">
+        <label
+          className="mb-1.5 block text-sm font-medium text-slate-700"
+          htmlFor="first_name"
+        >
           First Name
         </label>
         <input
@@ -79,7 +82,10 @@ function RegisterPage() {
           onChange={handleChange}
           required
         />
-        <label className="mb-4 w-full text-sm" htmlFor="last_name">
+        <label
+          className="mb-1.5 block text-sm font-medium text-slate-700"
+          htmlFor="last_name"
+        >
           Last Name
         </label>
         <input
@@ -91,7 +97,10 @@ function RegisterPage() {
           onChange={handleChange}
           required
         />
-        <label className="mb-4 w-full text-sm" htmlFor="email">
+        <label
+          className="mb-1.5 block text-sm font-medium text-slate-700"
+          htmlFor="email"
+        >
           E-mail
         </label>
         <input
@@ -105,7 +114,10 @@ function RegisterPage() {
           required
           autoComplete="email"
         />
-        <label className="mb-4 w-full text-sm" htmlFor="phone">
+        <label
+          className="mb-1.5 block text-sm font-medium text-slate-700"
+          htmlFor="phone"
+        >
           Phone number
         </label>
         <input
@@ -117,7 +129,10 @@ function RegisterPage() {
           onChange={handleChange}
           autoComplete="tel"
         />
-        <label className="mb-4 w-full text-sm" htmlFor="password">
+        <label
+          className="mb-1.5 block text-sm font-medium text-slate-700"
+          htmlFor="password"
+        >
           Password
         </label>
         <input
@@ -131,7 +146,10 @@ function RegisterPage() {
           required
           autoComplete="new-password"
         />
-        <label className="mb-4 w-full text-sm" htmlFor="confirm_password">
+        <label
+          className="mb-1.5 block text-sm font-medium text-slate-700"
+          htmlFor="confirm_password"
+        >
           Confirm Password
         </label>
         <input

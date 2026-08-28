@@ -58,7 +58,10 @@ function LoginPage() {
         <h2 className="mb-6 text-2xl font-semibold tracking-tight text-slate-900">
           Login
         </h2>
-        <label className="mb-4 w-full text-sm" htmlFor="email">
+        <label
+          className="mb-1.5 block text-sm font-medium text-slate-700"
+          htmlFor="email"
+        >
           E-mail
         </label>
         <input
@@ -72,7 +75,10 @@ function LoginPage() {
           required
           autoComplete="email"
         />
-        <label className="mb-4 w-full text-sm" htmlFor="password">
+        <label
+          className="mb-1.5 block text-sm font-medium text-slate-700"
+          htmlFor="password"
+        >
           Password
         </label>
         <input
