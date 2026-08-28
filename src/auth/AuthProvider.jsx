@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
-/** @import { LoginCredentials, AuthContextValue, User } from './types.js' */
+/** @import { LoginCredentials, AuthContextValue, User, UpdateProfileData } from './types.js' */
 import { AuthContext } from './AuthContext'
 import {
   login as loginRequest,
   logout as logoutRequest,
+  updateProfile as updateProfileRequest,
   refresh,
   getCurrentUser,
 } from './authService'
@@ -64,10 +65,26 @@ export function AuthProvider({ children }) {
       setAccessToken(null)
     }
   }
+  /**
+   * @param {UpdateProfileData} data
+   * @returns {Promise<User>}
+   */
+  async function updateProfile(data) {
+    if (accessToken === null) {
+      throw new Error('Not authenticated')
+    }
+
+    const updatedUser = await updateProfileRequest(data, accessToken)
+
+    setUser(updatedUser)
+
+    return updatedUser
+  }
   /** @type {AuthContextValue} */
   const value = {
     user,
     isAuthLoading,
+    updateProfile,
     login,
     logout,
     accessToken,
