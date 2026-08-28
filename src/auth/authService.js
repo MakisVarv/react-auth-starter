@@ -1,6 +1,6 @@
 import apiClient from '../api/apiClient'
 import { getCookie } from '../utils/cookies'
-/** @import { RegisterCredentials, LoginCredentials, LoginResponse, User } from './types.js' */
+/** @import { RegisterCredentials, UpdateProfileData, LoginCredentials, LoginResponse, User } from './types.js' */
 
 /**
  * @param {LoginCredentials} credentials
@@ -66,6 +66,21 @@ export async function refresh() {
 
 export async function getCurrentUser(accessToken) {
   const response = await apiClient.get('/auth/me', {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  return response.data
+}
+
+/**
+ * @param {UpdateProfileData} data
+ * @param {string} accessToken
+ * @returns {Promise<User>}
+ */
+
+export async function updateProfile(data, accessToken) {
+  const response = await apiClient.patch('/auth/me', data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

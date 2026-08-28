@@ -7,6 +7,7 @@ import GuestOnlyRoute from './auth/guards/GuestOnlyRoute'
 import DashboardPage from './pages/DashboardPage'
 import PermissionRoute from './auth/guards/PermissionRoute'
 import RegisterPage from './pages/RegisterPage'
+import ProfilePage from './pages/ProfilePage'
 
 function App() {
   return (
@@ -17,6 +18,14 @@ function App() {
           element={
             <ProtectedRoute>
               <HomePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
             </ProtectedRoute>
           }
         />

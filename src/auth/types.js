@@ -14,6 +14,13 @@
  */
 
 /**
+ * @typedef {Object} UpdateProfileData
+ * @property {string} first_name
+ * @property {string} last_name
+ * @property {string | null} phone
+ */
+
+/**
  * @typedef {Object} Permission
  * @property {string} id
  * @property {string} name
@@ -47,6 +54,7 @@
 
 /**
  * @typedef {Object} AuthContextValue
+ * @property {(data: UpdateProfileData) => Promise<User>} updateProfile
  * @property {User | null} user
  * @property {string | null} accessToken
  * @property {boolean} isAuthLoading
