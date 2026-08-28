@@ -1,6 +1,7 @@
 import apiClient from '../../shared/api/apiClient'
 import { getCookie } from '../../shared/utils/cookies'
-/** @import { RegisterCredentials, UpdateProfileData, LoginCredentials, LoginResponse, User } from './types.js' */
+/** @import { RegisterCredentials, UpdateProfileData, LoginCredentials, LoginResponse } from './types.js' */
+/** @import { User } from '../users/types.js' */
 
 /**
  * @param {LoginCredentials} credentials

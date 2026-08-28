@@ -8,19 +8,13 @@ import DashboardPage from './features/dashboard/DashboardPage'
 import PermissionRoute from './features/auth/guards/PermissionRoute'
 import RegisterPage from './features/auth/pages/RegisterPage'
 import ProfilePage from './features/account/pages/ProfilePage'
+import UsersPage from './features/users/pages/UsersPage'
 
 function App() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <HomePage />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/" element={<HomePage />} />
         <Route
           path="/profile"
           element={
@@ -34,6 +28,14 @@ function App() {
           element={
             <PermissionRoute permission="dashboard.read">
               <DashboardPage />
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <PermissionRoute permission="user.read">
+              <UsersPage />
             </PermissionRoute>
           }
         />

@@ -1,4 +1,4 @@
-/** @import { User } from './types.js' */
+/** @import { User } from '../users/types.js' */
 
 /**
  * @param {User | null} user

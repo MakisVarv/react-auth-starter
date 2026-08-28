@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-/** @import { LoginCredentials, AuthContextValue, User, UpdateProfileData } from './types.js' */
+/** @import { User } from '../users/types.js' */
+/** @import { LoginCredentials, AuthContextValue, UpdateProfileData } from './types.js' */
 import { AuthContext } from './AuthContext'
 import {
   login as loginRequest,
@@ -34,7 +35,7 @@ export function AuthProvider({ children }) {
         const user = await getCurrentUser(token)
         setUser(user)
         setAccessToken(token)
-      } catch (e) {
+      } catch {
         setUser(null)
         setAccessToken(null)
       } finally {
