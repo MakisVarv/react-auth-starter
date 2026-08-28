@@ -6,6 +6,7 @@ import ProtectedRoute from './auth/guards/ProtectedRoute'
 import GuestOnlyRoute from './auth/guards/GuestOnlyRoute'
 import DashboardPage from './pages/DashboardPage'
 import PermissionRoute from './auth/guards/PermissionRoute'
+import RegisterPage from './pages/RegisterPage'
 
 function App() {
   return (
@@ -32,6 +33,14 @@ function App() {
           element={
             <GuestOnlyRoute>
               <LoginPage />
+            </GuestOnlyRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <GuestOnlyRoute>
+              <RegisterPage />
             </GuestOnlyRoute>
           }
         />
