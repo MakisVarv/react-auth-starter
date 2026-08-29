@@ -1,5 +1,5 @@
 import apiClient from '../../shared/api/apiClient'
-/** @import { UsersQueryParams, UsersResponse } from './types.js' */
+/** @import { UsersQueryParams, UsersResponse,User } from './types.js' */
 
 /**
  * @param {UsersQueryParams} params
@@ -10,6 +10,26 @@ import apiClient from '../../shared/api/apiClient'
 export async function getUsers(params, accessToken) {
   const response = await apiClient.get('/users/', {
     params,
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  return response.data
+}
+/**
+ * @param {{
+ *   first_name: string,
+ *   last_name: string,
+ *   email: string,
+ *   password: string,
+ *   phone: string | null,
+ *   role_id: string
+ * }} payload
+ * @param {string} accessToken
+ * @returns {Promise<User>}
+ */
+export async function createUser(payload, accessToken) {
+  const response = await apiClient.post('/users/', payload, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

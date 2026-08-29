@@ -5,6 +5,8 @@ import { getUsers } from '../userService.js'
 import { toast } from 'sonner'
 import UsersTable from '../components/UsersTable.jsx'
 import { getRoles } from '../../roles/roleService.js'
+import { Link } from 'react-router-dom'
+import hasPermission from '../../auth/permissions.js'
 /** @import { User,Role } from '../types.js' */
 /** @import { Pagination } from '../../../shared/api/types.js' */
 
@@ -21,11 +23,12 @@ function UsersPage() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [sort, setSort] = useState('id')
-  const { accessToken } = useAuth()
+  const { user, accessToken } = useAuth()
   const [role, setRole] = useState('')
   const [roles, setRoles] = useState(/** @type {Role[]} */ ([]))
   const [isActive, setIsActive] = useState('')
   const hasFilters = search !== '' || role !== '' || isActive !== ''
+  const canCreateUser = hasPermission(user, 'user.create')
   useEffect(() => {
     async function loadRoles() {
       try {
@@ -93,11 +96,21 @@ function UsersPage() {
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-slate-900">Users</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Manage application users and their access.
-          </p>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold text-slate-900">Users</h1>
+            <p className="mt-1 text-sm text-slate-500">
+              Manage application users and their access.
+            </p>
+          </div>
+          {canCreateUser && (
+            <Link
+              to="/users/new"
+              className="inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300"
+            >
+              Create User
+            </Link>
+          )}
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
