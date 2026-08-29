@@ -101,8 +101,9 @@ function UsersPage() {
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div className="flex items-center gap-3 border-b border-slate-200 p-4">
+          <div className="flex flex-col gap-3 border-b border-slate-200 p-4 sm:flex-row sm:items-center">
             <input
+              aria-label="Search users"
               type="search"
               value={search}
               onChange={(e) => {
@@ -110,15 +111,19 @@ function UsersPage() {
                 setPage(1)
               }}
               placeholder="Search users..."
-              className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-lg text-slate-700"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:max-w-sm"
             />
+            <label htmlFor="role-filter" className="sr-only">
+              Filter by role
+            </label>
             <select
               value={role}
+              id="role-filter"
               onChange={(e) => {
                 setRole(e.target.value)
                 setPage(1)
               }}
-              className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-700"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:w-auto"
             >
               <option value="">All roles</option>
 
@@ -128,13 +133,18 @@ function UsersPage() {
                 </option>
               ))}
             </select>
+            <label htmlFor="status-filter" className="sr-only">
+              Filter by status
+            </label>
+
             <select
+              id="status-filter"
               value={isActive}
               onChange={(e) => {
                 setIsActive(e.target.value)
                 setPage(1)
               }}
-              className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-700"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:w-auto"
             >
               <option value="">All statuses</option>
               <option value="true">Active</option>
@@ -178,8 +188,8 @@ function UsersPage() {
           {!error && !isLoading && users.length > 0 && pagination !== null && (
             <>
               <UsersTable users={users} sort={sort} onSort={handleSort} />
-              <div className="flex items-center justify-between border-t border-slate-200 px-4 py-3">
-                <div className="flex items-center gap-4">
+              <div className="flex flex-col gap-3 border-t border-slate-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-wrap items-center gap-4">
                   <label htmlFor="page-size" className="text-sm text-slate-500">
                     Rows per page:
                   </label>
@@ -199,7 +209,14 @@ function UsersPage() {
                     <option value={100}>100</option>
                   </select>
 
-                  <p className="text-sm text-slate-500">{`Page ${pagination.page} of ${pagination.total_pages}`}</p>
+                  <p className="text-sm text-slate-500">
+                    {`Showing ${(page - 1) * pageSize + 1}–${Math.min(
+                      page * pageSize,
+                      pagination.total,
+                    )} of ${pagination.total} · Page ${pagination.page} of ${
+                      pagination.total_pages
+                    }`}
+                  </p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
