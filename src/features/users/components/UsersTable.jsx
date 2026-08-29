@@ -1,30 +1,98 @@
 /** @import { User } from '../types.js' */
 
 /**
- * @param {{ users: User[] }} props
+ * @param {{
+ *   users: User[],
+ *   sort: string,
+ *   onSort: (field: string) => void
+ * }} props
  */
-function UsersTable({ users }) {
+function UsersTable({ users, sort, onSort }) {
+  /**
+   * @param {string} field
+   */
+  function sortIcon(field) {
+    if (sort === field) return '↑'
+    if (sort === `-${field}`) return '↓'
+    return '↕'
+  }
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-left text-sm">
+      <table className="min-w-180 w-full text-left text-sm">
         <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
           <tr>
-            <th className="px-6 py-3 font-medium">Name</th>
-            <th className="px-6 py-3 font-medium">Email</th>
-            <th className="px-6 py-3 font-medium">Role</th>
-            <th className="px-6 py-3 font-medium">Status</th>
+            <th className="px-6 py-3 font-medium">
+              <button
+                className="inline-flex items-center gap-1.5 font-medium text-slate-500 transition hover:text-slate-900"
+                type="button"
+                onClick={() => onSort('first_name')}
+              >
+                First Name {sortIcon('first_name')}
+              </button>
+            </th>
+            <th className="px-6 py-3 font-medium">
+              <button
+                className="inline-flex items-center gap-1.5 font-medium text-slate-500 transition hover:text-slate-900"
+                type="button"
+                onClick={() => onSort('last_name')}
+              >
+                Last Name {sortIcon('last_name')}
+              </button>
+            </th>
+            <th className="px-6 py-3 font-medium">
+              <button
+                className="inline-flex items-center gap-1.5 font-medium text-slate-500 transition hover:text-slate-900"
+                type="button"
+                onClick={() => onSort('email')}
+              >
+                Email {sortIcon('email')}
+              </button>
+            </th>
+            <th className="px-6 py-3 font-medium">
+              <button
+                className="inline-flex items-center gap-1.5 font-medium text-slate-500 transition hover:text-slate-900"
+                type="button"
+                onClick={() => onSort('role')}
+              >
+                Role {sortIcon('role')}
+              </button>
+            </th>
+            <th className="px-6 py-3 font-medium">
+              <button
+                className="inline-flex items-center gap-1.5 font-medium text-slate-500 transition hover:text-slate-900"
+                type="button"
+                onClick={() => onSort('is_active')}
+              >
+                Status {sortIcon('is_active')}
+              </button>
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-200">
           {users.map((user) => (
             <tr className="transition hover:bg-slate-50" key={user.id}>
-              <td className="px-6 py-4 text-slate-700">
-                {user.first_name + ' ' + user.last_name}
+              <td className="px-6 py-4 font-medium text-slate-900">
+                {user.first_name}
+              </td>
+              <td className="px-6 py-4 font-medium text-slate-900">
+                {user.last_name}
               </td>
               <td className="px-6 py-4 text-slate-700">{user.email}</td>
-              <td className="px-6 py-4 text-slate-700">{user.role.name}</td>
-              <td className="px-6 py-4 text-slate-700">
-                {user.is_active ? 'Active' : 'Inactive'}
+              <td className="px-6 py-4 font-medium text-slate-900">
+                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
+                  {user.role.name}
+                </span>
+              </td>
+              <td className="px-6 py-4">
+                <span
+                  className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                    user.is_active
+                      ? 'bg-emerald-50 text-emerald-700'
+                      : 'bg-slate-100 text-slate-500'
+                  }`}
+                >
+                  {user.is_active ? 'Active' : 'Inactive'}
+                </span>
               </td>
             </tr>
           ))}
