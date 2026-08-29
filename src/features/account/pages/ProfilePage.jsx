@@ -1,4 +1,5 @@
 import { useState } from 'react'
+/** @import {ChangeEvent, SubmitEvent } from 'react'*/
 import { useAuth } from '../../auth/useAuth'
 import { toast } from 'sonner'
 import { AppError } from '../../../shared/api/errors'
@@ -14,7 +15,7 @@ function ProfilePage() {
   const [edit, setEdit] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
-  /** @param {import('react').ChangeEvent<HTMLInputElement>} e */
+  /** @param {ChangeEvent<HTMLInputElement>} e */
   function handleChange(e) {
     const { name, value } = e.target
 
@@ -36,7 +37,7 @@ function ProfilePage() {
     setEdit(false)
   }
 
-  /** @param {import('react').SubmitEvent<HTMLFormElement>} e */
+  /** @param {SubmitEvent<HTMLFormElement>} e */
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')

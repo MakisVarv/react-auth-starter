@@ -1,4 +1,5 @@
 import { useState } from 'react'
+/** @import {ChangeEvent, SubmitEvent } from 'react'*/
 import { useAuth } from '../useAuth'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { AppError } from '../../../shared/api/errors'
@@ -15,7 +16,7 @@ function LoginPage() {
   const [error, setError] = useState('')
   const location = useLocation()
   const from = location.state?.from
-  /** @param {import('react').SubmitEvent<HTMLFormElement>} e */
+  /** @param {SubmitEvent<HTMLFormElement>} e */
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -37,7 +38,7 @@ function LoginPage() {
       setIsSubmitting(false)
     }
   }
-  /** @param {import('react').ChangeEvent<HTMLInputElement>} e */
+  /** @param {ChangeEvent<HTMLInputElement>} e */
   function handleChange(e) {
     const { name, value } = e.target
 

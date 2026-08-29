@@ -1,4 +1,5 @@
 import { useState } from 'react'
+/** @import {ChangeEvent, SubmitEvent } from 'react'*/
 import { Link, useNavigate } from 'react-router-dom'
 import { AppError } from '../../../shared/api/errors'
 import { register } from '../authService.js'
@@ -16,7 +17,7 @@ function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
-  /** @param {import('react').ChangeEvent<HTMLInputElement>} e */
+  /** @param {ChangeEvent<HTMLInputElement>} e */
   function handleChange(e) {
     const { name, value } = e.target
 
@@ -28,7 +29,7 @@ function RegisterPage() {
     }))
   }
 
-  /** @param {import('react').SubmitEvent<HTMLFormElement>} e */
+  /** @param {SubmitEvent<HTMLFormElement>} e */
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
