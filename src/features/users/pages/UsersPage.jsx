@@ -20,22 +20,20 @@ function UsersPage() {
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [sort, setSort] = useState('id')
   const { accessToken } = useAuth()
   const [role, setRole] = useState('')
   const [roles, setRoles] = useState(/** @type {Role[]} */ ([]))
+  const [isActive, setIsActive] = useState('')
+  const hasFilters = search !== '' || role !== '' || isActive !== ''
   useEffect(() => {
     async function loadRoles() {
       try {
         if (accessToken === null) return
-        setError('')
         const data = await getRoles(accessToken)
         setRoles(data)
-      } catch (e) {
-        if (e instanceof AppError) {
-          setError(e.message)
-        } else {
-          toast.error('Something went wrong. Please try again.')
-        }
+      } catch {
+        toast.error('Could not fetch roles')
       }
     }
     loadRoles()
@@ -58,7 +56,9 @@ function UsersPage() {
             page,
             page_size: pageSize,
             search: debouncedSearch,
+            sort,
             role: role || undefined,
+            is_active: isActive === '' ? undefined : isActive === 'true',
           },
           accessToken,
         )
@@ -75,8 +75,21 @@ function UsersPage() {
       }
     }
     loadUsers()
-  }, [accessToken, page, pageSize, debouncedSearch, role])
+  }, [accessToken, page, pageSize, debouncedSearch, isActive, role, sort])
+  /**
+   * @param {string} field
+   */
+  function handleSort(field) {
+    setSort((current) => {
+      if (current === field) {
+        return `-${field}`
+      }
 
+      return field
+    })
+
+    setPage(1)
+  }
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
@@ -115,6 +128,18 @@ function UsersPage() {
                 </option>
               ))}
             </select>
+            <select
+              value={isActive}
+              onChange={(e) => {
+                setIsActive(e.target.value)
+                setPage(1)
+              }}
+              className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-700"
+            >
+              <option value="">All statuses</option>
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
+            </select>
           </div>
           {isLoading && (
             <div className="flex items-center justify-center gap-3 p-8 text-sm text-slate-500">
@@ -125,7 +150,7 @@ function UsersPage() {
           {error && (
             <div className="p-8 text-center text-sm text-red-500">{error}</div>
           )}
-          {!error && !isLoading && users.length === 0 && search === '' && (
+          {!error && !isLoading && users.length === 0 && !hasFilters && (
             <div className="flex flex-col items-center justify-center p-10 text-center">
               <p className="text-sm font-medium text-slate-700">
                 No users yet.
@@ -135,7 +160,7 @@ function UsersPage() {
               </p>
             </div>
           )}
-          {!error && !isLoading && users.length === 0 && search !== '' && (
+          {!error && !isLoading && users.length === 0 && hasFilters && (
             <div className="flex flex-col items-center justify-center gap-2 p-10 text-center">
               <div className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500">
                 No results
@@ -152,7 +177,7 @@ function UsersPage() {
           )}
           {!error && !isLoading && users.length > 0 && pagination !== null && (
             <>
-              <UsersTable users={users} />
+              <UsersTable users={users} sort={sort} onSort={handleSort} />
               <div className="flex items-center justify-between border-t border-slate-200 px-4 py-3">
                 <div className="flex items-center gap-4">
                   <label htmlFor="page-size" className="text-sm text-slate-500">

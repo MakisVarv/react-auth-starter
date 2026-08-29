@@ -36,6 +36,7 @@
  * @property {number} [page]
  * @property {number} [page_size]
  * @property {string} [search]
+ * @property {string} [sort]
  * @property {string} [role]
  * @property {boolean} [is_active]
  */
