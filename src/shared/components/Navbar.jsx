@@ -12,7 +12,7 @@ function NavBar() {
    */
   function navLinkClass({ isActive }) {
     return isActive
-      ? 'rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white'
+      ? 'rounded-lg bg-blue-900 px-3 py-2 text-sm font-medium text-white'
       : 'rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900'
   }
   return (
