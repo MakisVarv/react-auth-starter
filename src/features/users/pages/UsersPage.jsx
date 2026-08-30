@@ -29,6 +29,7 @@ function UsersPage() {
   const [isActive, setIsActive] = useState('')
   const hasFilters = search !== '' || role !== '' || isActive !== ''
   const canCreateUser = hasPermission(user, 'user.create')
+  const canEditUser = hasPermission(user, 'user.update')
   useEffect(() => {
     async function loadRoles() {
       try {
@@ -200,7 +201,12 @@ function UsersPage() {
           )}
           {!error && !isLoading && users.length > 0 && pagination !== null && (
             <>
-              <UsersTable users={users} sort={sort} onSort={handleSort} />
+              <UsersTable
+                canEditUser={canEditUser}
+                users={users}
+                sort={sort}
+                onSort={handleSort}
+              />
               <div className="flex flex-col gap-3 border-t border-slate-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-wrap items-center gap-4">
                   <label htmlFor="page-size" className="text-sm text-slate-500">

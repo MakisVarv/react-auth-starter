@@ -1,13 +1,16 @@
 /** @import { User } from '../types.js' */
 
+import { Link } from 'react-router-dom'
+
 /**
  * @param {{
  *   users: User[],
  *   sort: string,
+ *   canEditUser:boolean,
  *   onSort: (field: string) => void
  * }} props
  */
-function UsersTable({ users, sort, onSort }) {
+function UsersTable({ users, canEditUser, sort, onSort }) {
   /**
    * @param {string} field
    */
@@ -66,6 +69,7 @@ function UsersTable({ users, sort, onSort }) {
                 Status {sortIcon('is_active')}
               </button>
             </th>
+            <th className="px-6 py-3 font-medium">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-200">
@@ -93,6 +97,16 @@ function UsersTable({ users, sort, onSort }) {
                 >
                   {user.is_active ? 'Active' : 'Inactive'}
                 </span>
+              </td>
+              <td className="px-6 py-4">
+                {canEditUser && (
+                  <Link
+                    to={`/users/${user.id}/edit`}
+                    className="inline-flex items-center rounded-lg bg-blue-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  >
+                    Edit
+                  </Link>
+                )}
               </td>
             </tr>
           ))}

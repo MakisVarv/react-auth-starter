@@ -10,6 +10,7 @@ import RegisterPage from './features/auth/pages/RegisterPage'
 import ProfilePage from './features/account/pages/ProfilePage'
 import UsersPage from './features/users/pages/UsersPage'
 import CreateUserPage from './features/users/pages/CreateUserPage'
+import EditUserPage from './features/users/pages/EditUserPage'
 
 function App() {
   return (
@@ -45,6 +46,14 @@ function App() {
           element={
             <PermissionRoute permission="user.create">
               <CreateUserPage />
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="/users/:userId/edit"
+          element={
+            <PermissionRoute permission="user.update">
+              <EditUserPage />
             </PermissionRoute>
           }
         />
