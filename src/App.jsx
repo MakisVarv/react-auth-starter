@@ -11,6 +11,7 @@ import ProfilePage from './features/account/pages/ProfilePage'
 import UsersPage from './features/users/pages/UsersPage'
 import CreateUserPage from './features/users/pages/CreateUserPage'
 import EditUserPage from './features/users/pages/EditUserPage'
+import UserDetailsPage from './features/users/pages/UserDetailsPage'
 
 function App() {
   return (
@@ -54,6 +55,14 @@ function App() {
           element={
             <PermissionRoute permission="user.update">
               <EditUserPage />
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="/users/:userId"
+          element={
+            <PermissionRoute permission="user.read">
+              <UserDetailsPage />
             </PermissionRoute>
           }
         />
