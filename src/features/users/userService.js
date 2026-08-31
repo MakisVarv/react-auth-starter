@@ -69,3 +69,21 @@ export async function editUser(userId, payload, accessToken) {
   })
   return response.data
 }
+/**
+ * @param {string} userId
+ * @param {string} roleId
+ * @param {string} accessToken
+ * @returns {Promise<User>}
+ */
+export async function changeRole(userId, roleId, accessToken) {
+  const response = await apiClient.patch(
+    `/users/${userId}/role`,
+    { role_id: roleId },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  )
+  return response.data
+}

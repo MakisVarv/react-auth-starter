@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { getUser } from '../userService'
 import { AppError } from '../../../shared/api/errors'
 import hasPermission from '../../auth/permissions'
+import ChangeRoleModal from '../components/ChangeRoleModal'
 /** @import { User } from '../types.js' */
 function UserDetailsPage() {
   const { userId } = useParams()
@@ -11,8 +12,9 @@ function UserDetailsPage() {
   const [loadError, setLoadError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState(/** @type {User | null } */ (null))
-
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false)
   const canEditUser = hasPermission(currentUser, 'user.update')
+  const canChangeRole = hasPermission(currentUser, 'user.change_role')
   useEffect(() => {
     async function loadUser() {
       if (!userId || accessToken === null) return
@@ -33,6 +35,14 @@ function UserDetailsPage() {
     }
     loadUser()
   }, [userId, accessToken])
+  const handleModalClose = () => {
+    setIsRoleModalOpen(false)
+  }
+  /** @param  {User} updatedUser */
+  const handleRoleChange = (updatedUser) => {
+    setUser(updatedUser)
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl">
@@ -63,7 +73,6 @@ function UserDetailsPage() {
         )}
         {!loadError && !isLoading && user != null && (
           <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-            {/* Header */}
             <div className="flex flex-col gap-4 border-b border-slate-200 p-6 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h1 className="text-2xl font-semibold text-slate-900">
@@ -74,37 +83,43 @@ function UserDetailsPage() {
                   View and manage this user account.
                 </p>
               </div>
-
-              {canEditUser && (
-                <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
+                {canEditUser && (
                   <Link
                     to={`/users/${user?.id}/edit`}
                     className="text-sm font-medium text-blue-600 transition hover:text-blue-800"
                   >
                     Edit
                   </Link>
-                </div>
-              )}
+                )}
+                {canChangeRole && (
+                  <button
+                    type="button"
+                    onClick={() => setIsRoleModalOpen(true)}
+                    className="text-sm font-medium text-slate-600 transition hover:text-slate-800"
+                  >
+                    Change Role
+                  </button>
+                )}
+              </div>
             </div>
 
-            {/* Identity */}
             <div className="border-b border-slate-200 p-6">
               <div className="flex items-center gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-lg font-semibold text-slate-700">
-                  {`${user?.first_name.charAt(0).toUpperCase()}${user?.last_name.charAt(0).toUpperCase()}`}
+                  {`${user.first_name.charAt(0).toUpperCase()}${user.last_name.charAt(0).toUpperCase()}`}
                 </div>
 
                 <div>
                   <h2 className="text-lg font-semibold text-slate-900">
-                    {`${user?.first_name} ${user?.last_name}`}
+                    {`${user.first_name} ${user.last_name}`}
                   </h2>
 
-                  <p className="text-sm text-slate-500">{user?.email}</p>
+                  <p className="text-sm text-slate-500">{user.email}</p>
                 </div>
               </div>
             </div>
 
-            {/* Details */}
             <div className="grid gap-6 p-6 sm:grid-cols-2">
               <div>
                 <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
@@ -128,7 +143,7 @@ function UserDetailsPage() {
                 <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
                   Email
                 </p>
-                <p className="mt-1 text-sm text-slate-700">{user?.email}</p>
+                <p className="mt-1 text-sm text-slate-700">{user.email}</p>
               </div>
 
               <div>
@@ -157,7 +172,7 @@ function UserDetailsPage() {
 
                 <span
                   className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                    user?.is_active
+                    user.is_active
                       ? 'bg-emerald-50 text-emerald-700'
                       : 'bg-slate-100 text-slate-500'
                   }`}
@@ -166,6 +181,13 @@ function UserDetailsPage() {
                 </span>
               </div>
             </div>
+            {isRoleModalOpen && (
+              <ChangeRoleModal
+                user={user}
+                onClose={handleModalClose}
+                onRoleChange={handleRoleChange}
+              />
+            )}
           </div>
         )}
       </div>
