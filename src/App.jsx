@@ -12,6 +12,7 @@ import UsersPage from './features/users/pages/UsersPage'
 import CreateUserPage from './features/users/pages/CreateUserPage'
 import EditUserPage from './features/users/pages/EditUserPage'
 import UserDetailsPage from './features/users/pages/UserDetailsPage'
+import AdminLayout from './layouts/AdminLayout'
 
 function App() {
   return (
@@ -26,22 +27,25 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/dashboard"
-          element={
-            <PermissionRoute permission="dashboard.read">
-              <DashboardPage />
-            </PermissionRoute>
-          }
-        />
-        <Route
-          path="/users"
-          element={
-            <PermissionRoute permission="user.read">
-              <UsersPage />
-            </PermissionRoute>
-          }
-        />
+        <Route element={<AdminLayout />}>
+          <Route
+            path="/dashboard"
+            element={
+              <PermissionRoute permission="dashboard.read">
+                <DashboardPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <PermissionRoute permission="user.read">
+                <UsersPage />
+              </PermissionRoute>
+            }
+          />
+        </Route>
+
         <Route
           path="/users/new"
           element={

@@ -22,16 +22,6 @@ function NavBar() {
           <NavLink to="/" className={navLinkClass}>
             Home
           </NavLink>
-          {user !== null && hasPermission(user, 'dashboard.read') && (
-            <NavLink to="/dashboard" className={navLinkClass}>
-              Dashboard
-            </NavLink>
-          )}
-          {user !== null && hasPermission(user, 'user.read') && (
-            <NavLink to="/users" className={navLinkClass}>
-              Users
-            </NavLink>
-          )}
         </div>
         <div className="flex items-center gap-2">
           {user === null && (
