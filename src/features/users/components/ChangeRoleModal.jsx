@@ -32,14 +32,14 @@ function ChangeRoleModal({ user, onClose, onRoleChange }) {
     }
     loadRoles()
   }, [accessToken])
-  const handleSubmit = async (e) => {
+  const handleSubmit = async () => {
     setError('')
     if (accessToken === null) return
     setIsSubmitting(true)
     try {
       const updateUser = await changeRole(user.id, selectedRoleId, accessToken)
-      toast.success('Role changed successfully.')
       onRoleChange(updateUser)
+      toast.success('Role changed successfully.')
       onClose()
     } catch (e) {
       if (e instanceof AppError) {
