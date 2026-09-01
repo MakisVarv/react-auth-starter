@@ -3,9 +3,10 @@ import Sidebar from '../shared/components/Sidebar'
 
 function AdminLayout() {
   return (
-    <div>
+    <div className="flex min-h-screen">
       <Sidebar />
-      <main>
+
+      <main className="min-w-0 flex-1">
         <Outlet />
       </main>
     </div>

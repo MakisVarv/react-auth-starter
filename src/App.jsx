@@ -27,6 +27,22 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/login"
+          element={
+            <GuestOnlyRoute>
+              <LoginPage />
+            </GuestOnlyRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <GuestOnlyRoute>
+              <RegisterPage />
+            </GuestOnlyRoute>
+          }
+        />
         <Route element={<AdminLayout />}>
           <Route
             path="/dashboard"
@@ -44,48 +60,31 @@ function App() {
               </PermissionRoute>
             }
           />
+          <Route
+            path="/users/new"
+            element={
+              <PermissionRoute permission="user.create">
+                <CreateUserPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/users/:userId/edit"
+            element={
+              <PermissionRoute permission="user.update">
+                <EditUserPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/users/:userId"
+            element={
+              <PermissionRoute permission="user.read">
+                <UserDetailsPage />
+              </PermissionRoute>
+            }
+          />
         </Route>
-
-        <Route
-          path="/users/new"
-          element={
-            <PermissionRoute permission="user.create">
-              <CreateUserPage />
-            </PermissionRoute>
-          }
-        />
-        <Route
-          path="/users/:userId/edit"
-          element={
-            <PermissionRoute permission="user.update">
-              <EditUserPage />
-            </PermissionRoute>
-          }
-        />
-        <Route
-          path="/users/:userId"
-          element={
-            <PermissionRoute permission="user.read">
-              <UserDetailsPage />
-            </PermissionRoute>
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <GuestOnlyRoute>
-              <LoginPage />
-            </GuestOnlyRoute>
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            <GuestOnlyRoute>
-              <RegisterPage />
-            </GuestOnlyRoute>
-          }
-        />
       </Route>
     </Routes>
   )
