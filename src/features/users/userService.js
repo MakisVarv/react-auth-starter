@@ -71,6 +71,24 @@ export async function editUser(userId, payload, accessToken) {
 }
 /**
  * @param {string} userId
+ * @param {boolean} isActive
+ * @param {string} accessToken
+ * @returns {Promise<User>}
+ */
+export async function changeUserStatus(userId, isActive, accessToken) {
+  const response = await apiClient.patch(
+    `/users/${userId}/status`,
+    { is_active: isActive },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  )
+  return response.data
+}
+/**
+ * @param {string} userId
  * @param {string} roleId
  * @param {string} accessToken
  * @returns {Promise<User>}
@@ -86,4 +104,16 @@ export async function changeRole(userId, roleId, accessToken) {
     },
   )
   return response.data
+}
+/**
+ * @param {string} userId
+ * @param {string} accessToken
+ * @returns {Promise<void>}
+ */
+export async function deleteUser(userId, accessToken) {
+  await apiClient.delete(`/users/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
 }
