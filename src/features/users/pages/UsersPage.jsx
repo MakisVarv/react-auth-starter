@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../auth/useAuth.js'
 import { AppError } from '../../../shared/api/errors.js'
-import { getUsers } from '../userService.js'
+import { changeUserStatus, getUsers } from '../userService.js'
 import { toast } from 'sonner'
 import UsersTable from '../components/UsersTable.jsx'
 import { getRoles } from '../../roles/roleService.js'
@@ -27,6 +27,7 @@ function UsersPage() {
   const [role, setRole] = useState('')
   const [roles, setRoles] = useState(/** @type {Role[]} */ ([]))
   const [isActive, setIsActive] = useState('')
+  const [refreshKey, setRefreshKey] = useState(0)
   const hasFilters = search !== '' || role !== '' || isActive !== ''
   const canCreateUser = hasPermission(user, 'user.create')
   const canEditUser = hasPermission(user, 'user.update')
@@ -79,7 +80,16 @@ function UsersPage() {
       }
     }
     loadUsers()
-  }, [accessToken, page, pageSize, debouncedSearch, isActive, role, sort])
+  }, [
+    accessToken,
+    page,
+    pageSize,
+    debouncedSearch,
+    isActive,
+    role,
+    sort,
+    refreshKey,
+  ])
   /**
    * @param {string} field
    */
@@ -93,6 +103,28 @@ function UsersPage() {
     })
 
     setPage(1)
+  }
+  /**
+   * @param {User} user
+   */
+  async function handleStatusChange(user) {
+    try {
+      if (accessToken === null) return
+      setError('')
+      await changeUserStatus(user.id, !user.is_active, accessToken)
+      setRefreshKey((current) => current + 1)
+      toast.success(
+        user.is_active
+          ? 'User deactivated successfully'
+          : 'User activated successfully',
+      )
+    } catch (e) {
+      if (e instanceof AppError) {
+        setError(e.message)
+      } else {
+        toast.error('Something went wrong. Please try again.')
+      }
+    }
   }
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
@@ -206,6 +238,7 @@ function UsersPage() {
                 users={users}
                 sort={sort}
                 onSort={handleSort}
+                onStatusChange={handleStatusChange}
               />
               <div className="flex flex-col gap-3 border-t border-slate-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-wrap items-center gap-4">

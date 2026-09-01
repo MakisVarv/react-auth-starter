@@ -8,9 +8,10 @@ import { Link } from 'react-router-dom'
  *   sort: string,
  *   canEditUser:boolean,
  *   onSort: (field: string) => void
+ *   onStatusChange: (user: User) => Promise<void>
  * }} props
  */
-function UsersTable({ users, canEditUser, sort, onSort }) {
+function UsersTable({ users, canEditUser, sort, onSort, onStatusChange }) {
   /**
    * @param {string} field
    */
@@ -107,12 +108,31 @@ function UsersTable({ users, canEditUser, sort, onSort }) {
                     View
                   </Link>
                   {canEditUser && (
-                    <Link
-                      to={`/users/${user.id}/edit`}
-                      className="inline-flex items-center rounded-lg bg-blue-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                    >
-                      Edit
-                    </Link>
+                    <>
+                      <Link
+                        to={`/users/${user.id}/edit`}
+                        className="inline-flex items-center rounded-lg bg-blue-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                      >
+                        Edit
+                      </Link>
+                      <button
+                        onClick={() => onStatusChange(user)}
+                        className={`inline-flex items-center rounded-lg 
+                        px-4 py-2 text-sm 
+                        font-medium 
+                        text-white 
+                        transition 
+                        focus:outline-none 
+                        focus:ring-2
+                         ${
+                           user.is_active
+                             ? 'bg-red-800 hover:bg-red-700 focus:ring-red-300'
+                             : 'bg-emerald-800 hover:bg-emerald-700 focus:ring-emerald-300'
+                         }`}
+                      >
+                        {user.is_active ? 'Deactivate' : 'Activate'}
+                      </button>
+                    </>
                   )}
                 </div>
               </td>

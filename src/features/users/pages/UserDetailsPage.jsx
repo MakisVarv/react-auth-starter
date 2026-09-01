@@ -1,10 +1,12 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../../auth/useAuth'
 import { useEffect, useState } from 'react'
-import { getUser } from '../userService'
+import { changeUserStatus, getUser } from '../userService'
 import { AppError } from '../../../shared/api/errors'
 import hasPermission from '../../auth/permissions'
 import ChangeRoleModal from '../components/ChangeRoleModal'
+import DeleteUserModal from '../components/DeleteUserModal'
+import { toast } from 'sonner'
 /** @import { User } from '../types.js' */
 function UserDetailsPage() {
   const { userId } = useParams()
@@ -15,6 +17,9 @@ function UserDetailsPage() {
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false)
   const canEditUser = hasPermission(currentUser, 'user.update')
   const canChangeRole = hasPermission(currentUser, 'user.change_role')
+  const canDeleteUser = hasPermission(currentUser, 'user.delete')
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const navigate = useNavigate()
   useEffect(() => {
     async function loadUser() {
       if (!userId || accessToken === null) return
@@ -38,9 +43,41 @@ function UserDetailsPage() {
   const handleModalClose = () => {
     setIsRoleModalOpen(false)
   }
+  const handleDeleteModalClose = () => {
+    setIsDeleteModalOpen(false)
+  }
   /** @param  {User} updatedUser */
   const handleRoleChange = (updatedUser) => {
     setUser(updatedUser)
+  }
+  function handleUserDeleted() {
+    navigate('/users', { replace: true })
+  }
+  /**
+   * @param {User} user
+   */
+  async function handleStatusChange(user) {
+    try {
+      if (accessToken === null) return
+
+      const updatedUser = await changeUserStatus(
+        user.id,
+        !user.is_active,
+        accessToken,
+      )
+      setUser(updatedUser)
+      toast.success(
+        user.is_active
+          ? 'User deactivated successfully'
+          : 'User activated successfully',
+      )
+    } catch (e) {
+      if (e instanceof AppError) {
+        toast.error(e.message)
+      } else {
+        toast.error('Something went wrong. Please try again.')
+      }
+    }
   }
 
   return (
@@ -83,11 +120,11 @@ function UserDetailsPage() {
                   View and manage this user account.
                 </p>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
                 {canEditUser && (
                   <Link
                     to={`/users/${user?.id}/edit`}
-                    className="text-sm font-medium text-blue-600 transition hover:text-blue-800"
+                    className="text-sm px-3 py-2 font-medium text-blue-600 hover:rounded-lg hover:bg-blue-600 hover:text-white"
                   >
                     Edit
                   </Link>
@@ -96,11 +133,37 @@ function UserDetailsPage() {
                   <button
                     type="button"
                     onClick={() => setIsRoleModalOpen(true)}
-                    className="text-sm font-medium text-slate-600 transition hover:text-slate-800"
+                    className="text-sm  px-3 py-2 font-medium text-slate-600  hover:rounded-lg hover:bg-slate-600 hover:text-white"
                   >
                     Change Role
                   </button>
                 )}
+                {canEditUser && (
+                  <button
+                    type="button"
+                    onClick={() => handleStatusChange(user)}
+                    className={`w-22 text-sm  px-3 py-2 font-medium
+                      hover:rounded-lg hover:text-white
+                      ${
+                        user.is_active
+                          ? 'hover:bg-red-700 text-red-600'
+                          : 'hover:bg-emerald-700 text-emerald-600'
+                      }`}
+                  >
+                    {user.is_active ? 'Deactivate' : 'Activate'}
+                  </button>
+                )}
+                <div className="w-20">
+                  {canDeleteUser && !user.is_active && (
+                    <button
+                      type="button"
+                      onClick={() => setIsDeleteModalOpen(true)}
+                      className="text-sm px-3 py-2 font-medium text-red-600  hover:rounded-lg hover:bg-red-600 hover:text-white"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -186,6 +249,13 @@ function UserDetailsPage() {
                 user={user}
                 onClose={handleModalClose}
                 onRoleChange={handleRoleChange}
+              />
+            )}
+            {isDeleteModalOpen && (
+              <DeleteUserModal
+                user={user}
+                onClose={handleDeleteModalClose}
+                onDeleted={handleUserDeleted}
               />
             )}
           </div>
