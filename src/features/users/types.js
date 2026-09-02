@@ -1,19 +1,5 @@
 /** @import { Pagination } from '../../shared/api/types.js' */
-/**
- * @typedef {Object} Permission
- * @property {string} id
- * @property {string} name
- * @property {string} description
- */
-
-/**
- * @typedef {Object} Role
- * @property {string} id
- * @property {string} name
- * @property {string} description
- * @property {Permission[]} permissions
- */
-
+/** @import { Role } from '../roles/types.js' */
 /**
  * @typedef {Object} User
  * @property {string} id

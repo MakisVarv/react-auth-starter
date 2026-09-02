@@ -1,4 +1,5 @@
-/** @import { User,Role } from '../types.js' */
+/** @import { User } from '../types.js' */
+/** @import { Role } from '../../roles/types.js' */
 /** @import {ChangeEvent } from 'react'*/
 import { useEffect, useState } from 'react'
 import { useAuth } from '../../auth/useAuth.js'

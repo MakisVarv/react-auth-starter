@@ -7,7 +7,7 @@ import { useAuth } from '../../auth/useAuth'
 import { getRoles } from '../../roles/roleService'
 import { createUser } from '../userService'
 import UserForm from '../components/UserForm.jsx'
-/** @import { Role } from '../types.js' */
+/** @import { Role } from '../../roles/types.js' */
 function CreateUserPage() {
   const [form, setForm] = useState({
     first_name: '',
