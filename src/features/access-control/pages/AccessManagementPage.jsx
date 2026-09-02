@@ -30,6 +30,9 @@ function AccessManagementPage() {
   const [permissions, setPermissions] = useState(
     /** @type {Permission[]} */ ([]),
   )
+  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [selectedRoleId, setSelectedRoleId] = useState('')
   const canCreateRole = hasPermission(user, 'role.create')
   const canEditRole = hasPermission(user, 'role.update')
   const canDeleteRole = hasPermission(user, 'role.delete')
@@ -61,6 +64,15 @@ function AccessManagementPage() {
     }
     loadPermissions()
   }, [accessToken])
+
+  const selectedRole = roles.find((role) => role.id === selectedRoleId)
+  const assignedPermissions = selectedRole?.permissions
+
+  const availablePermissions = permissions.filter(
+    (permission) =>
+      !assignedPermissions?.some((assigned) => assigned.id === permission.id),
+  )
+
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
@@ -74,24 +86,93 @@ function AccessManagementPage() {
           </p>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-            {roles.map((role) => (
-              <div className="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3 transition hover:bg-slate-50">
-                <p>{role.name}</p>
-                <p>{role.description}</p>
-              </div>
-            ))}
-          </section>
+        <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
+          <div>
+            <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+              <div className="border-b border-slate-200 px-5 py-4">
+                <h2 className="text-lg font-semibold text-slate-900">Roles</h2>
 
-          <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-            {permissions.map((permission) => (
-              <div className="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3">
-                <p>{permission.name}</p>
-                <p>{permission.description}</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  Select a role to manage its permissions.
+                </p>
               </div>
-            ))}
-          </section>
+              <div className="space-y-2 p-4">
+                {roles.map((role) => (
+                  <button
+                    key={role.id}
+                    type="button"
+                    onClick={() => setSelectedRoleId(role.id)}
+                    className={` overflow-hidden w-full rounded-xl border px-4 py-3 text-left transition 
+                    ${selectedRoleId === role.id ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:bg-slate-50 bg-white'}`}
+                  >
+                    <p className="font-medium text-slate-900">{role.name}</p>
+                    <p className="mt-1 text-sm text-slate-500">
+                      {role.description}
+                    </p>
+                  </button>
+                ))}
+              </div>
+            </section>
+          </div>
+          {selectedRole != null && (
+            <div>
+              <section className=" overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <div className="border-b border-slate-200 px-5 py-4">
+                  <h2 className="text-lg font-semibold text-slate-900">
+                    Permissions
+                  </h2>
+
+                  <p className="mt-1 text-sm text-slate-500">
+                    Permissions for {selectedRole.name}
+                  </p>
+                </div>
+                <div className="space-y-6 p-4">
+                  <section>
+                    <h3 className="mb-3 text-sm font-semibold text-slate-900">
+                      Assigned · {assignedPermissions?.length ?? 0}
+                    </h3>
+
+                    <div className="max-h-[28vh] space-y-2 overflow-y-auto pr-1">
+                      {assignedPermissions?.map((permission) => (
+                        <div
+                          key={permission.id}
+                          className="flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2"
+                        >
+                          <p className="text-sm font-medium text-slate-900">
+                            {permission.name}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {permission.description}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  <section>
+                    <h3 className="mb-3 text-sm font-semibold text-slate-900">
+                      Available · {availablePermissions.length}
+                    </h3>
+                    <div className="max-h-[28vh] space-y-2 overflow-y-auto pr-1">
+                      {availablePermissions.map((permission) => (
+                        <div
+                          key={permission.id}
+                          className="flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2"
+                        >
+                          <p className="text-sm font-medium text-slate-900">
+                            {permission.name}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {permission.description}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                </div>
+              </section>
+            </div>
+          )}
         </div>
       </div>
     </div>
