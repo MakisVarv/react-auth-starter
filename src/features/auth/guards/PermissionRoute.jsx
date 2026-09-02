@@ -1,20 +1,20 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../useAuth'
-import hasPermission from '../permissions'
+import { hasAllPermissions } from '../permissions'
 /**
  * @param {{
  *   children: import('react').ReactNode,
- *   permission: string
+ *   permissions: string[]
  * }} props
  */
 
-function PermissionRoute({ children, permission }) {
+function PermissionRoute({ children, permissions }) {
   const { user } = useAuth()
 
   if (user === null) {
     return <Navigate to="/login" replace />
   }
-  if (hasPermission(user, permission)) {
+  if (hasAllPermissions(user, permissions)) {
     return children
   }
   return <Navigate to="/" replace />

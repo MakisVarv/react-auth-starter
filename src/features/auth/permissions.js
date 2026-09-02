@@ -6,8 +6,15 @@
  * @returns {boolean}
  */
 
-function hasPermission(user, permissionName) {
+export function hasPermission(user, permissionName) {
   if (user === null) return false
   return user.role.permissions.some((p) => p.name === permissionName)
 }
-export default hasPermission
+/**
+ * @param {User | null} user
+ * @param {string[]} permissions
+ * @returns {boolean}
+ */
+export function hasAllPermissions(user, permissions) {
+  return permissions.every((permission) => hasPermission(user, permission))
+}

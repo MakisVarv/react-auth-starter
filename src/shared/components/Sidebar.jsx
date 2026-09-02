@@ -1,22 +1,29 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../../features/auth/useAuth'
-import hasPermission from '../../features/auth/permissions'
+import { hasPermission } from '../../features/auth/permissions'
 
 function Sidebar() {
   const { user } = useAuth()
 
   const items = [
-    { label: 'Dashboard', to: '/dashboard', permission: 'dashboard.read' },
-    { label: 'Users', to: '/users', permission: 'user.read' },
-    { label: 'Roles', to: '/roles', permission: 'role.read' },
-    { label: 'Permissions', to: '/permissions', permission: 'permission.read' },
+    { label: 'Dashboard', to: '/dashboard', permissions: ['dashboard.read'] },
+    { label: 'Users', to: '/users', permissions: ['user.read'] },
+    {
+      label: 'Access Control',
+      to: '/accessControl',
+      permissions: ['role.read', 'permission.read'],
+    },
   ]
 
   return (
     <aside className="min-h-screen w-60 border-r border-slate-200 bg-blue-900 px-3 py-6">
       <nav className="flex flex-col gap-1">
         {items
-          .filter((item) => hasPermission(user, item.permission))
+          .filter((item) =>
+            item.permissions.every((permission) =>
+              hasPermission(user, permission),
+            ),
+          )
           .map((item) => (
             <NavLink
               key={item.to}

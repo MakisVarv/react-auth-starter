@@ -3,10 +3,10 @@ import { useAuth } from '../../auth/useAuth'
 import { useEffect, useState } from 'react'
 import { changeUserStatus, getUser } from '../userService'
 import { AppError } from '../../../shared/api/errors'
-import hasPermission from '../../auth/permissions'
 import ChangeRoleModal from '../components/ChangeRoleModal'
 import DeleteUserModal from '../components/DeleteUserModal'
 import { toast } from 'sonner'
+import { hasPermission } from '../../auth/permissions'
 /** @import { User } from '../types.js' */
 function UserDetailsPage() {
   const { userId } = useParams()

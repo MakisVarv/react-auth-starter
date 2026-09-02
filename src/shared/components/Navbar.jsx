@@ -1,6 +1,5 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../../features/auth/useAuth'
-import hasPermission from '../../features/auth/permissions'
 
 function NavBar() {
   const { user, logout } = useAuth()

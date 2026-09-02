@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import UsersTable from '../components/UsersTable.jsx'
 import { getRoles } from '../../roles/roleService.js'
 import { Link } from 'react-router-dom'
-import hasPermission from '../../auth/permissions.js'
+import { hasPermission } from '../../auth/permissions.js'
 /** @import { User } from '../types.js' */
 /** @import { Role } from '../../roles/types.js' */
 /** @import { Pagination } from '../../../shared/api/types.js' */
