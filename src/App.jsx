@@ -13,6 +13,7 @@ import CreateUserPage from './features/users/pages/CreateUserPage'
 import EditUserPage from './features/users/pages/EditUserPage'
 import UserDetailsPage from './features/users/pages/UserDetailsPage'
 import AdminLayout from './layouts/AdminLayout'
+import AccessManagementPage from './features/access-control/pages/AccessManagementPage'
 
 function App() {
   return (
@@ -47,15 +48,23 @@ function App() {
           <Route
             path="/dashboard"
             element={
-              <PermissionRoute permission="dashboard.read">
+              <PermissionRoute permissions={['dashboard.read']}>
                 <DashboardPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/accessControl"
+            element={
+              <PermissionRoute permissions={['role.read', 'permission.read']}>
+                <AccessManagementPage />
               </PermissionRoute>
             }
           />
           <Route
             path="/users"
             element={
-              <PermissionRoute permission="user.read">
+              <PermissionRoute permissions={['user.read']}>
                 <UsersPage />
               </PermissionRoute>
             }
@@ -63,7 +72,7 @@ function App() {
           <Route
             path="/users/new"
             element={
-              <PermissionRoute permission="user.create">
+              <PermissionRoute permissions={['user.create']}>
                 <CreateUserPage />
               </PermissionRoute>
             }
@@ -71,7 +80,7 @@ function App() {
           <Route
             path="/users/:userId/edit"
             element={
-              <PermissionRoute permission="user.update">
+              <PermissionRoute permissions={['user.update']}>
                 <EditUserPage />
               </PermissionRoute>
             }
@@ -79,7 +88,7 @@ function App() {
           <Route
             path="/users/:userId"
             element={
-              <PermissionRoute permission="user.read">
+              <PermissionRoute permissions={['user.read']}>
                 <UserDetailsPage />
               </PermissionRoute>
             }
