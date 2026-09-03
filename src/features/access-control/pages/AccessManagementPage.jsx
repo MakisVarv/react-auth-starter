@@ -33,6 +33,7 @@ function AccessManagementPage() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [selectedRoleId, setSelectedRoleId] = useState('')
+  const [updatingPermissionId, setUpdatingPermissionId] = useState('')
   const canCreateRole = hasPermission(user, 'role.create')
   const canEditRole = hasPermission(user, 'role.update')
   const canDeleteRole = hasPermission(user, 'role.delete')
@@ -41,29 +42,84 @@ function AccessManagementPage() {
   const canDeletePermission = hasPermission(user, 'permission.delete')
   const canAssignPermissions = hasPermission(user, 'role.assign_permission')
   useEffect(() => {
-    async function loadRoles() {
+    async function loadAccessData() {
       try {
         if (accessToken === null) return
-        const data = await getRoles(accessToken)
-        setRoles(data)
-      } catch {
-        toast.error('Could not fetch roles')
+        setIsLoading(true)
+        setError('')
+        const [rolesData, permissionsData] = await Promise.all([
+          getRoles(accessToken),
+          getPermissions(accessToken),
+        ])
+        setRoles(rolesData)
+        setPermissions(permissionsData)
+      } catch (e) {
+        if (e instanceof AppError) {
+          setError(e.message)
+        } else {
+          setError('Could not fetch role/permission data!')
+        }
+      } finally {
+        setIsLoading(false)
       }
     }
-    loadRoles()
+    loadAccessData()
   }, [accessToken])
-  useEffect(() => {
-    async function loadPermissions() {
-      try {
-        if (accessToken === null) return
-        const data = await getPermissions(accessToken)
-        setPermissions(data)
-      } catch {
-        toast.error('Could not fetch roles')
+
+  /**
+   * @param {string} permissionId
+   */
+  async function addPermission(permissionId) {
+    try {
+      if (accessToken === null) return
+      setUpdatingPermissionId(permissionId)
+      const updatedRole = await addPermissionToRole(
+        selectedRoleId,
+        permissionId,
+        accessToken,
+      )
+      setRoles((currentRoles) =>
+        currentRoles.map((role) =>
+          role.id === updatedRole.id ? updatedRole : role,
+        ),
+      )
+    } catch (e) {
+      if (e instanceof AppError) {
+        toast.error(e.message)
+      } else {
+        toast.error('Something went wrong. Please try again.')
       }
+    } finally {
+      setUpdatingPermissionId('')
     }
-    loadPermissions()
-  }, [accessToken])
+  }
+  /**
+   * @param {string} permissionId
+   */
+  async function removePermission(permissionId) {
+    try {
+      if (accessToken === null) return
+      setUpdatingPermissionId(permissionId)
+      const updatedRole = await removePermissionFromRole(
+        selectedRoleId,
+        permissionId,
+        accessToken,
+      )
+      setRoles((currentRoles) =>
+        currentRoles.map((role) =>
+          role.id === updatedRole.id ? updatedRole : role,
+        ),
+      )
+    } catch (e) {
+      if (e instanceof AppError) {
+        toast.error(e.message)
+      } else {
+        toast.error('Something went wrong. Please try again.')
+      }
+    } finally {
+      setUpdatingPermissionId('')
+    }
+  }
 
   const selectedRole = roles.find((role) => role.id === selectedRoleId)
   const assignedPermissions = selectedRole?.permissions
@@ -72,7 +128,20 @@ function AccessManagementPage() {
     (permission) =>
       !assignedPermissions?.some((assigned) => assigned.id === permission.id),
   )
-
+  if (isLoading) {
+    return (
+      <div className="flex min-h-75 items-center justify-center">
+        <p className="text-sm text-slate-500">Loading access management...</p>
+      </div>
+    )
+  }
+  if (error) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+        <p className="text-sm text-red-700">{error}</p>
+      </div>
+    )
+  }
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
@@ -132,18 +201,33 @@ function AccessManagementPage() {
                       Assigned · {assignedPermissions?.length ?? 0}
                     </h3>
 
-                    <div className="max-h-[28vh] space-y-2 overflow-y-auto pr-1">
+                    <div className="max-h-[28vh] space-y-1.5 overflow-y-auto pr-1">
                       {assignedPermissions?.map((permission) => (
                         <div
                           key={permission.id}
-                          className="flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2"
+                          className="flex items-center justify-between rounded-lg border border-slate-200 px-3 py-1.5 gap-3"
                         >
-                          <p className="text-sm font-medium text-slate-900">
-                            {permission.name}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {permission.description}
-                          </p>
+                          <div className="overflow-hidden w-full text-left">
+                            <p className="text-sm font-medium text-slate-900">
+                              {permission.name}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              {permission.description}
+                            </p>
+                          </div>
+
+                          {canAssignPermissions && (
+                            <button
+                              disabled={updatingPermissionId === permission.id}
+                              onClick={() => removePermission(permission.id)}
+                              aria-label="Remove permission from role"
+                              title="Remove permission"
+                              type="button"
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-red-200 bg-red-50 text-lg font-semibold text-red-700 transition hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-300 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                              ×
+                            </button>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -153,18 +237,32 @@ function AccessManagementPage() {
                     <h3 className="mb-3 text-sm font-semibold text-slate-900">
                       Available · {availablePermissions.length}
                     </h3>
-                    <div className="max-h-[28vh] space-y-2 overflow-y-auto pr-1">
+                    <div className="max-h-[28vh] space-y-1.5 overflow-y-auto pr-1">
                       {availablePermissions.map((permission) => (
                         <div
                           key={permission.id}
-                          className="flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2"
+                          className="flex items-center justify-between rounded-lg border border-slate-200 px-3 py-1.5 gap-3"
                         >
-                          <p className="text-sm font-medium text-slate-900">
-                            {permission.name}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {permission.description}
-                          </p>
+                          <div className="overflow-hidden w-full text-left">
+                            <p className="text-sm font-medium text-slate-900">
+                              {permission.name}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              {permission.description}
+                            </p>
+                          </div>
+                          {canAssignPermissions && (
+                            <button
+                              disabled={updatingPermissionId === permission.id}
+                              type="button"
+                              onClick={() => addPermission(permission.id)}
+                              aria-label="Add permission to role"
+                              title="Add permission"
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-emerald-200 bg-emerald-50 text-lg font-semibold text-emerald-700 transition hover:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-300 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                              +
+                            </button>
+                          )}
                         </div>
                       ))}
                     </div>
