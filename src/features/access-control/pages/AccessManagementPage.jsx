@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '../../auth/useAuth.js'
 import { AppError } from '../../../shared/api/errors.js'
 import { toast } from 'sonner'
@@ -20,9 +20,26 @@ import {
   deletePermission,
 } from '../../permissions/permissionsService'
 import { hasPermission } from '../../auth/permissions.js'
+import AccessItemModal from '../components/AccessItemModal.jsx'
 
 /** @import { Role } from '../../roles/types.js' */
 /** @import { Permission } from '../../permissions/types.js' */
+/**
+ * @typedef {'role' | 'permission'} AccessItemType
+ */
+
+/**
+ * @typedef {'create' | 'edit'} AccessItemMode
+ */
+
+/**
+ * @typedef {{
+ *   isOpen: boolean,
+ *   type: AccessItemType | null,
+ *   mode: AccessItemMode | null,
+ *   item: Role | Permission | null,
+ * }} AccessModalState
+ */
 
 function AccessManagementPage() {
   const { user, accessToken } = useAuth()
@@ -41,31 +58,50 @@ function AccessManagementPage() {
   const canEditPermission = hasPermission(user, 'permission.update')
   const canDeletePermission = hasPermission(user, 'permission.delete')
   const canAssignPermissions = hasPermission(user, 'role.assign_permission')
-  useEffect(() => {
-    async function loadAccessData() {
-      try {
-        if (accessToken === null) return
-        setIsLoading(true)
-        setError('')
-        const [rolesData, permissionsData] = await Promise.all([
-          getRoles(accessToken),
-          getPermissions(accessToken),
-        ])
-        setRoles(rolesData)
-        setPermissions(permissionsData)
-      } catch (e) {
-        if (e instanceof AppError) {
-          setError(e.message)
-        } else {
-          setError('Could not fetch role/permission data!')
-        }
-      } finally {
-        setIsLoading(false)
+  const [modal, setModal] = useState(
+    /** @type {AccessModalState} */ ({
+      isOpen: false,
+      type: null,
+      mode: null,
+      item: null,
+    }),
+  )
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const loadAccessData = useCallback(async () => {
+    try {
+      if (accessToken === null) return
+      setIsLoading(true)
+      setError('')
+      const [rolesData, permissionsData] = await Promise.all([
+        getRoles(accessToken),
+        getPermissions(accessToken),
+      ])
+      setRoles(rolesData)
+      setPermissions(permissionsData)
+    } catch (e) {
+      if (e instanceof AppError) {
+        setError(e.message)
+      } else {
+        setError('Could not fetch role/permission data!')
       }
+    } finally {
+      setIsLoading(false)
     }
-    loadAccessData()
   }, [accessToken])
-
+  useEffect(() => {
+    async function load() {
+      await loadAccessData()
+    }
+    load()
+  }, [loadAccessData])
+  function handleModalClose() {
+    setModal({
+      isOpen: false,
+      type: null,
+      mode: null,
+      item: null,
+    })
+  }
   /**
    * @param {string} permissionId
    */
@@ -91,6 +127,60 @@ function AccessManagementPage() {
       }
     } finally {
       setUpdatingPermissionId('')
+    }
+  }
+  /**
+   * @param {{name: string, description: string}} values
+   */
+  async function handleModalSubmit(values) {
+    try {
+      setIsSubmitting(true)
+      if (accessToken === null) return
+      if (modal.type === 'role' && modal.mode === 'create') {
+        const newRole = await createRole(values, accessToken)
+
+        setRoles((currentRoles) => [...currentRoles, newRole])
+      }
+
+      if (modal.type === 'permission' && modal.mode === 'create') {
+        const newPermission = await createPermission(values, accessToken)
+
+        setPermissions((currentPermissions) => [
+          ...currentPermissions,
+          newPermission,
+        ])
+      }
+      if (modal.type === 'role' && modal.mode === 'edit') {
+        if (modal.item == null) {
+          toast.error('Unable to edit this item.')
+          handleModalClose()
+          return
+        }
+        const updatedRole = await editRole(modal.item.id, values, accessToken)
+        setRoles((currentRoles) =>
+          currentRoles.map((role) =>
+            role.id === updatedRole.id ? updatedRole : role,
+          ),
+        )
+      }
+      if (modal.type === 'permission' && modal.mode === 'edit') {
+        if (modal.item == null) {
+          toast.error('Unable to edit this item.')
+          handleModalClose()
+          return
+        }
+        await editPermission(modal.item.id, values, accessToken)
+        await loadAccessData()
+      }
+      handleModalClose()
+    } catch (e) {
+      if (e instanceof AppError) {
+        toast.error(e.message)
+      } else {
+        toast.error('Something went wrong. Please try again.')
+      }
+    } finally {
+      setIsSubmitting(false)
     }
   }
   /**
@@ -128,6 +218,31 @@ function AccessManagementPage() {
     (permission) =>
       !assignedPermissions?.some((assigned) => assigned.id === permission.id),
   )
+  const typeLabels = {
+    role: 'Role',
+    permission: 'Permission',
+  }
+
+  const modeLabels = {
+    create: 'Create',
+    edit: 'Edit',
+  }
+  const modalTitle =
+    modal.type && modal.mode
+      ? `${modeLabels[modal.mode]} ${typeLabels[modal.type]}`
+      : ''
+
+  const modalSubmitLabel = modal.mode === 'create' ? 'Create' : 'Save Changes'
+
+  const modalInitialValues = modal.item
+    ? {
+        name: modal.item.name,
+        description: modal.item.description ?? '',
+      }
+    : {
+        name: '',
+        description: '',
+      }
   if (isLoading) {
     return (
       <div className="flex min-h-75 items-center justify-center">
@@ -158,27 +273,68 @@ function AccessManagementPage() {
         <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <div className="border-b border-slate-200 px-5 py-4">
-                <h2 className="text-lg font-semibold text-slate-900">Roles</h2>
+              <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-900">
+                    Roles
+                  </h2>
 
-                <p className="mt-1 text-sm text-slate-500">
-                  Select a role to manage its permissions.
-                </p>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Select a role to manage its permissions.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setModal({
+                      isOpen: true,
+                      type: 'role',
+                      mode: 'create',
+                      item: null,
+                    })
+                  }
+                  className="inline-flex items-center rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-300"
+                >
+                  Create
+                </button>
               </div>
               <div className="space-y-2 p-4">
                 {roles.map((role) => (
-                  <button
+                  <div
                     key={role.id}
-                    type="button"
-                    onClick={() => setSelectedRoleId(role.id)}
-                    className={` overflow-hidden w-full rounded-xl border px-4 py-3 text-left transition 
+                    className={`flex items-center justify-between overflow-hidden w-full rounded-xl border px-4 py-3 text-left transition 
                     ${selectedRoleId === role.id ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:bg-slate-50 bg-white'}`}
                   >
-                    <p className="font-medium text-slate-900">{role.name}</p>
-                    <p className="mt-1 text-sm text-slate-500">
-                      {role.description}
-                    </p>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRoleId(role.id)}
+                      className="flex-1 px-4 py-3 text-left"
+                    >
+                      <p className="font-medium text-slate-900">{role.name}</p>
+                      <p className="mt-1 text-sm text-slate-500">
+                        {role.description}
+                      </p>
+                    </button>
+
+                    {canEditRole && (
+                      <button
+                        type="button"
+                        aria-label={`Edit ${role.name}`}
+                        title="Edit role"
+                        onClick={() =>
+                          setModal({
+                            isOpen: true,
+                            type: 'role',
+                            mode: 'edit',
+                            item: role,
+                          })
+                        }
+                        className="mr-3 -scale-x-100 inline-flex h-8 w-8 items-center justify-center rounded-md border border-blue-200 bg-blue-500 text-lg font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        ✎
+                      </button>
+                    )}
+                  </div>
                 ))}
               </div>
             </section>
@@ -270,6 +426,16 @@ function AccessManagementPage() {
                 </div>
               </section>
             </div>
+          )}
+          {modal.isOpen && (
+            <AccessItemModal
+              title={modalTitle}
+              submitLabel={modalSubmitLabel}
+              initialValues={modalInitialValues}
+              isSubmitting={isSubmitting}
+              onSubmit={handleModalSubmit}
+              onClose={handleModalClose}
+            />
           )}
         </div>
       </div>
