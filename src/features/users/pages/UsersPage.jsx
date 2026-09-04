@@ -232,67 +232,75 @@ function UsersPage() {
               </p>
             </div>
           )}
-          {!error && !isLoading && users.length > 0 && pagination !== null && (
-            <>
-              <UsersTable
-                canEditUser={canEditUser}
-                users={users}
-                sort={sort}
-                onSort={handleSort}
-                onStatusChange={handleStatusChange}
-              />
-              <div className="flex flex-col gap-3 border-t border-slate-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex flex-wrap items-center gap-4">
-                  <label htmlFor="page-size" className="text-sm text-slate-500">
-                    Rows per page:
-                  </label>
-                  <select
-                    id="page-size"
-                    value={pageSize}
-                    onChange={(e) => {
-                      setPageSize(Number(e.target.value))
-                      setPage(1)
-                    }}
-                    className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-700"
-                  >
-                    <option value={5}>5</option>
-                    <option value={10}>10</option>
-                    <option value={20}>20</option>
-                    <option value={50}>50</option>
-                    <option value={100}>100</option>
-                  </select>
+          {!error &&
+            !isLoading &&
+            users.length > 0 &&
+            pagination !== null &&
+            user != null && (
+              <>
+                <UsersTable
+                  actor={user}
+                  canEditUser={canEditUser}
+                  users={users}
+                  sort={sort}
+                  onSort={handleSort}
+                  onStatusChange={handleStatusChange}
+                />
+                <div className="flex flex-col gap-3 border-t border-slate-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex flex-wrap items-center gap-4">
+                    <label
+                      htmlFor="page-size"
+                      className="text-sm text-slate-500"
+                    >
+                      Rows per page:
+                    </label>
+                    <select
+                      id="page-size"
+                      value={pageSize}
+                      onChange={(e) => {
+                        setPageSize(Number(e.target.value))
+                        setPage(1)
+                      }}
+                      className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-700"
+                    >
+                      <option value={5}>5</option>
+                      <option value={10}>10</option>
+                      <option value={20}>20</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                    </select>
 
-                  <p className="text-sm text-slate-500">
-                    {`Showing ${(page - 1) * pageSize + 1}–${Math.min(
-                      page * pageSize,
-                      pagination.total,
-                    )} of ${pagination.total} · Page ${pagination.page} of ${
-                      pagination.total_pages
-                    }`}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setPage((current) => current - 1)}
-                    disabled={page <= 1}
-                    className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Previous
-                  </button>
+                    <p className="text-sm text-slate-500">
+                      {`Showing ${(page - 1) * pageSize + 1}–${Math.min(
+                        page * pageSize,
+                        pagination.total,
+                      )} of ${pagination.total} · Page ${pagination.page} of ${
+                        pagination.total_pages
+                      }`}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPage((current) => current - 1)}
+                      disabled={page <= 1}
+                      className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Previous
+                    </button>
 
-                  <button
-                    type="button"
-                    onClick={() => setPage((current) => current + 1)}
-                    disabled={page >= pagination.total_pages}
-                    className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Next
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => setPage((current) => current + 1)}
+                      disabled={page >= pagination.total_pages}
+                      className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Next
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </>
-          )}
+              </>
+            )}
         </div>
       </div>
     </div>

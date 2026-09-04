@@ -7,6 +7,7 @@ import { getRoles } from '../../roles/roleService.js'
 import { toast } from 'sonner'
 import { AppError } from '../../../shared/api/errors.js'
 import { changeRole } from '../userService.js'
+import { canAssignRole } from '../../auth/permissions.js'
 
 /**
  * @param {{
@@ -16,7 +17,7 @@ import { changeRole } from '../userService.js'
  * }} props
  */
 function ChangeRoleModal({ user, onClose, onRoleChange }) {
-  const { accessToken } = useAuth()
+  const { user: actor, accessToken } = useAuth()
   const [roles, setRoles] = useState(/** @type {Role[]} */ ([]))
   const [selectedRoleId, setSelectedRoleId] = useState(user.role.id)
   const [error, setError] = useState('')
@@ -33,6 +34,8 @@ function ChangeRoleModal({ user, onClose, onRoleChange }) {
     }
     loadRoles()
   }, [accessToken])
+  if (actor === null) return
+  const assignableRoles = roles.filter((role) => canAssignRole(actor, role))
   const handleSubmit = async () => {
     setError('')
     if (accessToken === null) return
@@ -100,7 +103,7 @@ function ChangeRoleModal({ user, onClose, onRoleChange }) {
             <option value="" disabled>
               Select a role
             </option>
-            {roles.map((roleOption) => (
+            {assignableRoles.map((roleOption) => (
               <option key={roleOption.id} value={roleOption.id}>
                 {roleOption.name}
               </option>

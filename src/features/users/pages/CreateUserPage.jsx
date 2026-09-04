@@ -7,6 +7,7 @@ import { useAuth } from '../../auth/useAuth'
 import { getRoles } from '../../roles/roleService'
 import { createUser } from '../userService'
 import UserForm from '../components/UserForm.jsx'
+import { canAssignRole } from '../../auth/permissions'
 /** @import { Role } from '../../roles/types.js' */
 function CreateUserPage() {
   const [form, setForm] = useState({
@@ -18,7 +19,7 @@ function CreateUserPage() {
     phone: '',
     role_id: '',
   })
-  const { accessToken } = useAuth()
+  const { user, accessToken } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [roles, setRoles] = useState(/** @type {Role[]} */ ([]))
@@ -35,6 +36,8 @@ function CreateUserPage() {
     }
     loadRoles()
   }, [accessToken])
+  if (user === null) return
+  const assignableRoles = roles.filter((role) => canAssignRole(user, role))
   /** @param {ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>} e */
   function handleChange(e) {
     const { name, value } = e.target
@@ -144,7 +147,7 @@ function CreateUserPage() {
             <option value="" disabled>
               Select a role
             </option>
-            {roles.map((roleOption) => (
+            {assignableRoles.map((roleOption) => (
               <option key={roleOption.id} value={roleOption.id}>
                 {roleOption.name}
               </option>

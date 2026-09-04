@@ -6,7 +6,7 @@ import { AppError } from '../../../shared/api/errors'
 import ChangeRoleModal from '../components/ChangeRoleModal'
 import DeleteUserModal from '../components/DeleteUserModal'
 import { toast } from 'sonner'
-import { hasPermission } from '../../auth/permissions'
+import { canManageUser, hasPermission } from '../../auth/permissions'
 /** @import { User } from '../types.js' */
 function UserDetailsPage() {
   const { userId } = useParams()
@@ -40,6 +40,8 @@ function UserDetailsPage() {
     }
     loadUser()
   }, [userId, accessToken])
+  if (currentUser === null) return
+
   const handleModalClose = () => {
     setIsRoleModalOpen(false)
   }
@@ -120,51 +122,53 @@ function UserDetailsPage() {
                   View and manage this user account.
                 </p>
               </div>
-              <div className="flex items-center gap-2">
-                {canEditUser && (
-                  <Link
-                    to={`/users/${user?.id}/edit`}
-                    className="text-sm px-3 py-2 font-medium text-blue-600 hover:rounded-lg hover:bg-blue-600 hover:text-white"
-                  >
-                    Edit
-                  </Link>
-                )}
-                {canChangeRole && (
-                  <button
-                    type="button"
-                    onClick={() => setIsRoleModalOpen(true)}
-                    className="text-sm  px-3 py-2 font-medium text-slate-600  hover:rounded-lg hover:bg-slate-600 hover:text-white"
-                  >
-                    Change Role
-                  </button>
-                )}
-                {canEditUser && (
-                  <button
-                    type="button"
-                    onClick={() => handleStatusChange(user)}
-                    className={`w-22 text-sm  px-3 py-2 font-medium
+              {canManageUser(currentUser, user) && (
+                <div className="flex items-center gap-2">
+                  {canEditUser && (
+                    <Link
+                      to={`/users/${user?.id}/edit`}
+                      className="text-sm px-3 py-2 font-medium text-blue-600 hover:rounded-lg hover:bg-blue-600 hover:text-white"
+                    >
+                      Edit
+                    </Link>
+                  )}
+                  {canChangeRole && (
+                    <button
+                      type="button"
+                      onClick={() => setIsRoleModalOpen(true)}
+                      className="text-sm  px-3 py-2 font-medium text-slate-600  hover:rounded-lg hover:bg-slate-600 hover:text-white"
+                    >
+                      Change Role
+                    </button>
+                  )}
+                  {canEditUser && (
+                    <button
+                      type="button"
+                      onClick={() => handleStatusChange(user)}
+                      className={`w-22 text-sm  px-3 py-2 font-medium
                       hover:rounded-lg hover:text-white
                       ${
                         user.is_active
                           ? 'hover:bg-red-700 text-red-600'
                           : 'hover:bg-emerald-700 text-emerald-600'
                       }`}
-                  >
-                    {user.is_active ? 'Deactivate' : 'Activate'}
-                  </button>
-                )}
-                <div className="w-20">
-                  {canDeleteUser && !user.is_active && (
-                    <button
-                      type="button"
-                      onClick={() => setIsDeleteModalOpen(true)}
-                      className="text-sm px-3 py-2 font-medium text-red-600  hover:rounded-lg hover:bg-red-600 hover:text-white"
                     >
-                      Delete
+                      {user.is_active ? 'Deactivate' : 'Activate'}
                     </button>
                   )}
+                  <div className="w-20">
+                    {canDeleteUser && !user.is_active && (
+                      <button
+                        type="button"
+                        onClick={() => setIsDeleteModalOpen(true)}
+                        className="text-sm px-3 py-2 font-medium text-red-600  hover:rounded-lg hover:bg-red-600 hover:text-white"
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             <div className="border-b border-slate-200 p-6">
