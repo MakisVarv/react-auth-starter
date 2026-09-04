@@ -19,17 +19,21 @@ import {
   editPermission,
   deletePermission,
 } from '../../permissions/permissionsService'
-import { hasPermission } from '../../auth/permissions.js'
+import {
+  canAssignRole,
+  canManageRole,
+  hasPermission,
+} from '../../auth/permissions.js'
 import AccessItemModal from '../components/AccessItemModal.jsx'
 
 /** @import { Role } from '../../roles/types.js' */
 /** @import { Permission } from '../../permissions/types.js' */
 /**
- * @typedef {'role' | 'permission'} AccessItemType
+ * @typedef {'Role' | 'Permission'} AccessItemType
  */
 
 /**
- * @typedef {'create' | 'edit'} AccessItemMode
+ * @typedef {'Create' | 'Edit'} AccessItemMode
  */
 
 /**
@@ -40,7 +44,13 @@ import AccessItemModal from '../components/AccessItemModal.jsx'
  *   item: Role | Permission | null,
  * }} AccessModalState
  */
-
+/**
+ * @typedef {{
+ *   name: string,
+ *   description: string,
+ *   level?: number
+ * }} AccessItemFormValues
+ */
 function AccessManagementPage() {
   const { user, accessToken } = useAuth()
   const [roles, setRoles] = useState(/** @type {Role[]} */ ([]))
@@ -57,7 +67,7 @@ function AccessManagementPage() {
   const canCreatePermission = hasPermission(user, 'permission.create')
   const canEditPermission = hasPermission(user, 'permission.update')
   const canDeletePermission = hasPermission(user, 'permission.delete')
-  const canAssignPermissions = hasPermission(user, 'role.assign_permission')
+
   const [modal, setModal] = useState(
     /** @type {AccessModalState} */ ({
       isOpen: false,
@@ -65,6 +75,19 @@ function AccessManagementPage() {
       mode: null,
       item: null,
     }),
+  )
+
+  const selectedRole = roles.find((role) => role.id === selectedRoleId)
+  const canAssignPermissions =
+    hasPermission(user, 'role.assign_permission') &&
+    selectedRole != null &&
+    user != null &&
+    canAssignRole(user, selectedRole)
+  const assignedPermissions = selectedRole?.permissions
+
+  const availablePermissions = permissions.filter(
+    (permission) =>
+      !assignedPermissions?.some((assigned) => assigned.id === permission.id),
   )
   const [isSubmitting, setIsSubmitting] = useState(false)
   const loadAccessData = useCallback(async () => {
@@ -130,19 +153,19 @@ function AccessManagementPage() {
     }
   }
   /**
-   * @param {{name: string, description: string}} values
+   * @param {AccessItemFormValues} values
    */
   async function handleModalSubmit(values) {
     try {
       setIsSubmitting(true)
       if (accessToken === null) return
-      if (modal.type === 'role' && modal.mode === 'create') {
+      if (modal.type === 'Role' && modal.mode === 'Create') {
         const newRole = await createRole(values, accessToken)
 
         setRoles((currentRoles) => [...currentRoles, newRole])
       }
 
-      if (modal.type === 'permission' && modal.mode === 'create') {
+      if (modal.type === 'Permission' && modal.mode === 'Create') {
         const newPermission = await createPermission(values, accessToken)
 
         setPermissions((currentPermissions) => [
@@ -150,7 +173,7 @@ function AccessManagementPage() {
           newPermission,
         ])
       }
-      if (modal.type === 'role' && modal.mode === 'edit') {
+      if (modal.type === 'Role' && modal.mode === 'Edit') {
         if (modal.item == null) {
           toast.error('Unable to edit this item.')
           handleModalClose()
@@ -163,7 +186,7 @@ function AccessManagementPage() {
           ),
         )
       }
-      if (modal.type === 'permission' && modal.mode === 'edit') {
+      if (modal.type === 'Permission' && modal.mode === 'Edit') {
         if (modal.item == null) {
           toast.error('Unable to edit this item.')
           handleModalClose()
@@ -211,38 +234,6 @@ function AccessManagementPage() {
     }
   }
 
-  const selectedRole = roles.find((role) => role.id === selectedRoleId)
-  const assignedPermissions = selectedRole?.permissions
-
-  const availablePermissions = permissions.filter(
-    (permission) =>
-      !assignedPermissions?.some((assigned) => assigned.id === permission.id),
-  )
-  const typeLabels = {
-    role: 'Role',
-    permission: 'Permission',
-  }
-
-  const modeLabels = {
-    create: 'Create',
-    edit: 'Edit',
-  }
-  const modalTitle =
-    modal.type && modal.mode
-      ? `${modeLabels[modal.mode]} ${typeLabels[modal.type]}`
-      : ''
-
-  const modalSubmitLabel = modal.mode === 'create' ? 'Create' : 'Save Changes'
-
-  const modalInitialValues = modal.item
-    ? {
-        name: modal.item.name,
-        description: modal.item.description ?? '',
-      }
-    : {
-        name: '',
-        description: '',
-      }
   if (isLoading) {
     return (
       <div className="flex min-h-75 items-center justify-center">
@@ -283,20 +274,22 @@ function AccessManagementPage() {
                     Select a role to manage its permissions.
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setModal({
-                      isOpen: true,
-                      type: 'role',
-                      mode: 'create',
-                      item: null,
-                    })
-                  }
-                  className="inline-flex items-center rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-300"
-                >
-                  Create
-                </button>
+                {canCreateRole && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setModal({
+                        isOpen: true,
+                        type: 'Role',
+                        mode: 'Create',
+                        item: null,
+                      })
+                    }
+                    className="inline-flex items-center rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-300"
+                  >
+                    Create
+                  </button>
+                )}
               </div>
               <div className="space-y-2 p-4">
                 {roles.map((role) => (
@@ -316,24 +309,26 @@ function AccessManagementPage() {
                       </p>
                     </button>
 
-                    {canEditRole && (
-                      <button
-                        type="button"
-                        aria-label={`Edit ${role.name}`}
-                        title="Edit role"
-                        onClick={() =>
-                          setModal({
-                            isOpen: true,
-                            type: 'role',
-                            mode: 'edit',
-                            item: role,
-                          })
-                        }
-                        className="mr-3 -scale-x-100 inline-flex h-8 w-8 items-center justify-center rounded-md border border-blue-200 bg-blue-500 text-lg font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        ✎
-                      </button>
-                    )}
+                    {canEditRole &&
+                      user != null &&
+                      canManageRole(user, role) && (
+                        <button
+                          type="button"
+                          aria-label={`Edit ${role.name}`}
+                          title="Edit role"
+                          onClick={() =>
+                            setModal({
+                              isOpen: true,
+                              type: 'Role',
+                              mode: 'Edit',
+                              item: role,
+                            })
+                          }
+                          className="mr-3 -scale-x-100 inline-flex h-8 w-8 items-center justify-center rounded-md border border-blue-200 bg-blue-500 text-lg font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          ✎
+                        </button>
+                      )}
                   </div>
                 ))}
               </div>
@@ -427,16 +422,20 @@ function AccessManagementPage() {
               </section>
             </div>
           )}
-          {modal.isOpen && (
-            <AccessItemModal
-              title={modalTitle}
-              submitLabel={modalSubmitLabel}
-              initialValues={modalInitialValues}
-              isSubmitting={isSubmitting}
-              onSubmit={handleModalSubmit}
-              onClose={handleModalClose}
-            />
-          )}
+          {modal.isOpen &&
+            modal.type !== null &&
+            modal.mode !== null &&
+            user !== null && (
+              <AccessItemModal
+                actor={user}
+                action={modal.mode}
+                type={modal.type}
+                item={modal.item}
+                isSubmitting={isSubmitting}
+                onSubmit={handleModalSubmit}
+                onClose={handleModalClose}
+              />
+            )}
         </div>
       </div>
     </div>
