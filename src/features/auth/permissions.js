@@ -42,3 +42,14 @@ export function canAssignRole(actor, role) {
 
   return actor.role.level > role.level
 }
+
+/**
+ * @param {User} actor
+ * @param {Role} role
+ * @returns {boolean}
+ */
+export function canManageRole(actor, role) {
+  if (actor.role.level === MAX_ROLE_LEVEL) return true
+
+  return actor.role.level > role.level
+}
