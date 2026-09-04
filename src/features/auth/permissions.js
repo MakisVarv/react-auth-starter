@@ -1,4 +1,5 @@
 /** @import { User } from '../users/types.js' */
+/** @import { Role } from '../roles/types.js' */
 
 /**
  * @param {User | null} user
@@ -17,4 +18,27 @@ export function hasPermission(user, permissionName) {
  */
 export function hasAllPermissions(user, permissions) {
   return permissions.every((permission) => hasPermission(user, permission))
+}
+export const MAX_ROLE_LEVEL = 100
+
+/**
+ * @param {User} actor
+ * @param {User} target
+ * @returns {boolean}
+ */
+export function canManageUser(actor, target) {
+  if (actor.role.level === MAX_ROLE_LEVEL) return true
+
+  return actor.role.level > target.role.level
+}
+
+/**
+ * @param {User} actor
+ * @param {Role} role
+ * @returns {boolean}
+ */
+export function canAssignRole(actor, role) {
+  if (actor.role.level === MAX_ROLE_LEVEL) return true
+
+  return actor.role.level > role.level
 }

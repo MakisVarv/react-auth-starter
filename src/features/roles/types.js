@@ -4,6 +4,7 @@
  * @property {string} id
  * @property {string} name
  * @property {string} description
+ * @property {number} level
  * @property {Permission[]} permissions
  */
 export {}
