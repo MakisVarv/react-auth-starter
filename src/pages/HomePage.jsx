@@ -1,8 +1,14 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../features/auth/useAuth.js'
+import { hasPermission } from '../features/auth/permissions.js'
 
 function HomePage() {
   const { user } = useAuth()
+  const canViewDashboard = hasPermission(user, 'dashboard.read')
+  const authenticatedDestination = canViewDashboard ? '/dashboard' : '/profile'
+  const authenticatedLabel = canViewDashboard
+    ? 'Go to Dashboard'
+    : 'View Profile'
 
   const features = [
     {
@@ -48,12 +54,7 @@ function HomePage() {
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               {user ? (
-                <Link
-                  to="/dashboard"
-                  className="rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                >
-                  Go to Dashboard
-                </Link>
+                <Link to={authenticatedDestination}>{authenticatedLabel}</Link>
               ) : (
                 <>
                   <Link
