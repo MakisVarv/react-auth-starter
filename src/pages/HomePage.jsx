@@ -54,7 +54,12 @@ function HomePage() {
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               {user ? (
-                <Link to={authenticatedDestination}>{authenticatedLabel}</Link>
+                <Link
+                  to={authenticatedDestination}
+                  className="rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                >
+                  {authenticatedLabel}
+                </Link>
               ) : (
                 <>
                   <Link
@@ -127,10 +132,10 @@ function HomePage() {
           <div className="mt-6">
             {user ? (
               <Link
-                to="/dashboard"
+                to={authenticatedDestination}
                 className="inline-flex rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
               >
-                Open Dashboard
+                {authenticatedLabel}
               </Link>
             ) : (
               <Link
