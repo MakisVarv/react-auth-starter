@@ -33,6 +33,7 @@ export async function getRole(roleId, accessToken) {
  * @param {{
  *   name: string,
  *   description: string,
+ *   level: number
  * }} payload
  * @param {string} accessToken
  * @returns {Promise<Role>}
@@ -48,8 +49,9 @@ export async function createRole(payload, accessToken) {
 /**
  * @param {string} roleId
  * @param {{
- *   name: string,
- *   description: string,
+ *   name?: string,
+ *   description?: string,
+ *   level?: number
  * }} payload
  * @param {string} accessToken
  * @returns {Promise<Role>}

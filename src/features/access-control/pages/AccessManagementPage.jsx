@@ -12,7 +12,11 @@ import {
   removePermissionFromRole,
 } from '../../roles/roleService'
 import { getPermissions } from '../../permissions/permissionsService'
-import { canManageRole, hasPermission } from '../../auth/permissions.js'
+import {
+  canManageRole,
+  hasPermission,
+  isProtectedRole,
+} from '../../auth/permissions.js'
 import RoleModal from '../components/RoleModal.jsx'
 
 /** @import { Role } from '../../roles/types.js' */
@@ -166,7 +170,11 @@ function AccessManagementPage() {
           return
         }
 
-        const updatedRole = await editRole(modal.item.id, values, accessToken)
+        const payload = isProtectedRole(modal.item)
+          ? { description: values.description }
+          : values
+
+        const updatedRole = await editRole(modal.item.id, payload, accessToken)
 
         setRoles((currentRoles) =>
           currentRoles.map((role) =>
@@ -361,7 +369,8 @@ function AccessManagementPage() {
 
                           {canDeleteRole &&
                             user !== null &&
-                            canManageRole(user, role) && (
+                            canManageRole(user, role) &&
+                            !isProtectedRole(role) && (
                               <button
                                 type="button"
                                 onClick={() => handleDeleteRole(role.id)}

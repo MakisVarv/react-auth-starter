@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MAX_ROLE_LEVEL } from '../../auth/permissions.js'
+import { isProtectedRole, MAX_ROLE_LEVEL } from '../../auth/permissions.js'
 
 /** @import {ChangeEvent, SubmitEvent } from 'react' */
 /** @import {User} from '../../users/types.js' */
@@ -25,7 +25,8 @@ function RoleModal({ actor, action, item, isSubmitting, onSubmit, onClose }) {
     description: item?.description ?? '',
     level: item ? String(item.level) : '',
   })
-
+  const isProtectedEdit =
+    action === 'Edit' && item !== null && isProtectedRole(item)
   /** @param {ChangeEvent<HTMLInputElement>} e */
   function handleChange(e) {
     const { name, value } = e.target
@@ -69,6 +70,12 @@ function RoleModal({ actor, action, item, isSubmitting, onSubmit, onClose }) {
         <h2 className="text-xl font-semibold text-slate-900">
           {`${action} Role`}
         </h2>
+        {isProtectedEdit && (
+          <p className="mt-2 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500">
+            Built-in role name and level are fixed. You can still edit the
+            description.
+          </p>
+        )}
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <p className="text-xs text-slate-500">* Required fields</p>
@@ -85,7 +92,9 @@ function RoleModal({ actor, action, item, isSubmitting, onSubmit, onClose }) {
             name="name"
             value={form.name}
             onChange={handleChange}
-            className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            disabled={isProtectedEdit}
+            className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition
+            focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-500"
             required
           />
 
@@ -116,16 +125,23 @@ function RoleModal({ actor, action, item, isSubmitting, onSubmit, onClose }) {
             type="number"
             min={1}
             max={maxRoleLevel}
+            disabled={isProtectedEdit}
             name="level"
             value={form.level}
             onChange={handleChange}
-            className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition
+            focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-500"
             required
           />
-
-          <p className="mt-1 text-xs text-slate-500">
-            Enter a level from 1 to {maxRoleLevel}.
-          </p>
+          {isProtectedEdit ? (
+            <p className="mt-1 text-xs text-slate-500">
+              Built-in role level is fixed.
+            </p>
+          ) : (
+            <p className="mt-1 text-xs text-slate-500">
+              Enter a level from 1 to {maxRoleLevel}.
+            </p>
+          )}
 
           <div className="mt-8 flex items-center justify-end gap-3">
             <button
@@ -139,7 +155,7 @@ function RoleModal({ actor, action, item, isSubmitting, onSubmit, onClose }) {
             <button
               type="submit"
               disabled={isSubmitting || !isFormValid}
-              className="w-full rounded-lg bg-blue-600 px-4 py-2.5 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {action === 'Create' ? 'Create' : 'Save Changes'}
             </button>
