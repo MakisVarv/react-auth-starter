@@ -93,6 +93,12 @@ function LoginPage() {
       >
         Register
       </Link>
+      <Link
+        to="/forgot-password"
+        className="mt-3 block w-full rounded-lg border border-slate-300 px-4 py-2.5 text-center font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+      >
+        Forgot your password?
+      </Link>
     </form>
   )
 }

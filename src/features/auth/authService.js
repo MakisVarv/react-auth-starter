@@ -88,3 +88,11 @@ export async function updateProfile(data, accessToken) {
   })
   return response.data
 }
+/**
+ * @param {string} email
+ */
+export async function forgotPassword(email) {
+  const response = await apiClient.post('/auth/forgot-password', { email })
+
+  return response.data
+}
