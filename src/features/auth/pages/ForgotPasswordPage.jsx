@@ -6,6 +6,7 @@ import { FormField } from '../../../shared/components/form/FormField'
 import { FormError } from '../../../shared/components/form/FormError'
 import { forgotPassword } from '../authService'
 import { FormSuccess } from '../../../shared/components/form/FormSuccess'
+import { Link } from 'react-router-dom'
 export function ForgotPasswordPage() {
   const [form, setForm] = useState({
     email: '',
@@ -45,6 +46,24 @@ export function ForgotPasswordPage() {
       [name]: value,
     }))
   }
+  if (isSubmitted) {
+    return (
+      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-lg">
+        <h2 className="mb-4 text-2xl font-semibold tracking-tight text-slate-900">
+          Check your email
+        </h2>
+
+        <FormSuccess message={successMessage} />
+
+        <Link
+          to="/login"
+          className="mt-6 block w-full rounded-lg border border-slate-300 px-4 py-2.5 text-center font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+        >
+          Back to login
+        </Link>
+      </div>
+    )
+  }
   return (
     <form
       onSubmit={handleSubmit}
@@ -64,7 +83,6 @@ export function ForgotPasswordPage() {
         autoComplete="email"
       />
       <FormError error={error} />
-      {isSubmitted && <FormSuccess message={successMessage} />}
       <button
         className="w-full rounded-lg bg-blue-600 px-4 py-2.5 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
         disabled={isSubmitting}
