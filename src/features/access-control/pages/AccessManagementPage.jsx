@@ -11,7 +11,7 @@ import {
   addPermissionToRole,
   removePermissionFromRole,
 } from '../services/roleService.js'
-import { getPermissions } from '../services/permissionsService.js'
+import { getPermissions } from '../services/permissionService.js'
 import {
   canManageRole,
   hasPermission,

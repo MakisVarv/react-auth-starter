@@ -1,6 +1,6 @@
 import { useState } from 'react'
 /** @import {ChangeEvent, SubmitEvent } from 'react'*/
-import { useAuth } from '../../auth/useAuth'
+import { useAuth } from '../../auth/hooks/useAuth'
 import { toast } from 'sonner'
 import { AppError } from '../../../shared/api/errors'
 /** @import { UpdateProfileData } from '../types.js' */

@@ -4,8 +4,8 @@ import { useAuth } from '../hooks/useAuth'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { AppError } from '../../../shared/api/errors'
 import { toast } from 'sonner'
-import { FormField } from '../../../shared/components/FormField'
-import { PasswordField } from '../../../shared/components/PasswordField'
+import { FormField } from '../../../shared/components/form/FormField'
+import { PasswordField } from '../../../shared/components/form/PasswordField'
 
 function LoginPage() {
   const { login } = useAuth()

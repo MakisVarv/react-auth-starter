@@ -1,5 +1,5 @@
 import apiClient from '../../../shared/api/apiClient'
-/** @import { Role } from './types.js' */
+/** @import { Role } from '../types.js' */
 
 /**
  * @param {string} accessToken

@@ -1,7 +1,7 @@
 /** @import { User } from '../types.js' */
 
 import { useState } from 'react'
-import { useAuth } from '../../auth/useAuth.js'
+import { useAuth } from '../../auth/hooks/useAuth.js'
 import { deleteUser } from '../userService.js'
 import { toast } from 'sonner'
 import { AppError } from '../../../shared/api/errors.js'

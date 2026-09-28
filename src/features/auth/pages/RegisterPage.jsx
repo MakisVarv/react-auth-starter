@@ -4,8 +4,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { AppError } from '../../../shared/api/errors'
 import { register } from '../authService.js'
 import { toast } from 'sonner'
-import { FormField } from '../../../shared/components/FormField'
-import { PasswordField } from '../../../shared/components/PasswordField'
+import { FormField } from '../../../shared/components/form/FormField'
+import { PasswordField } from '../../../shared/components/form/PasswordField'
 /** @import { RegisterCredentials } from '../types.js' */
 function RegisterPage() {
   const [form, setForm] = useState({
