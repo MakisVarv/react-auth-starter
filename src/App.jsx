@@ -29,74 +29,74 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route element={<AuthLayout />}>
-          <Route
-            path="/login"
-            element={
-              <GuestOnlyRoute>
-                <LoginPage />
-              </GuestOnlyRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <GuestOnlyRoute>
-                <RegisterPage />
-              </GuestOnlyRoute>
-            }
-          />
-        </Route>
-        <Route element={<AdminLayout />}>
-          <Route
-            path="/dashboard"
-            element={
-              <PermissionRoute permissions={['dashboard.read']}>
-                <DashboardPage />
-              </PermissionRoute>
-            }
-          />
-          <Route
-            path="/accessControl"
-            element={
-              <PermissionRoute permissions={['role.read', 'permission.read']}>
-                <AccessManagementPage />
-              </PermissionRoute>
-            }
-          />
-          <Route
-            path="/users"
-            element={
-              <PermissionRoute permissions={['user.read']}>
-                <UsersPage />
-              </PermissionRoute>
-            }
-          />
-          <Route
-            path="/users/new"
-            element={
-              <PermissionRoute permissions={['user.create']}>
-                <CreateUserPage />
-              </PermissionRoute>
-            }
-          />
-          <Route
-            path="/users/:userId/edit"
-            element={
-              <PermissionRoute permissions={['user.update']}>
-                <EditUserPage />
-              </PermissionRoute>
-            }
-          />
-          <Route
-            path="/users/:userId"
-            element={
-              <PermissionRoute permissions={['user.read']}>
-                <UserDetailsPage />
-              </PermissionRoute>
-            }
-          />
-        </Route>
+      </Route>
+      <Route element={<AuthLayout />}>
+        <Route
+          path="/login"
+          element={
+            <GuestOnlyRoute>
+              <LoginPage />
+            </GuestOnlyRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <GuestOnlyRoute>
+              <RegisterPage />
+            </GuestOnlyRoute>
+          }
+        />
+      </Route>
+      <Route element={<AdminLayout />}>
+        <Route
+          path="/dashboard"
+          element={
+            <PermissionRoute permissions={['dashboard.read']}>
+              <DashboardPage />
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="/accessControl"
+          element={
+            <PermissionRoute permissions={['role.read', 'permission.read']}>
+              <AccessManagementPage />
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <PermissionRoute permissions={['user.read']}>
+              <UsersPage />
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="/users/new"
+          element={
+            <PermissionRoute permissions={['user.create']}>
+              <CreateUserPage />
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="/users/:userId/edit"
+          element={
+            <PermissionRoute permissions={['user.update']}>
+              <EditUserPage />
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="/users/:userId"
+          element={
+            <PermissionRoute permissions={['user.read']}>
+              <UserDetailsPage />
+            </PermissionRoute>
+          }
+        />
       </Route>
     </Routes>
   )
