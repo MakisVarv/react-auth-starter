@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { FormField } from '../../../shared/components/form/FormField'
 import { FormError } from '../../../shared/components/form/FormError'
 import { forgotPassword } from '../authService'
-import { FormSuccess } from '../../../shared/components/form/Formsuccess'
+import { FormSuccess } from '../../../shared/components/form/FormSuccess'
 export function ForgotPasswordPage() {
   const [form, setForm] = useState({
     email: '',
