@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useAuth } from '../../auth/useAuth.js'
+import { useAuth } from '../../auth/hooks/useAuth.js'
 import { AppError } from '../../../shared/api/errors.js'
 import { toast } from 'sonner'
 import { EllipsisVertical, Pencil, Trash2 } from 'lucide-react'
@@ -10,17 +10,17 @@ import {
   deleteRole,
   addPermissionToRole,
   removePermissionFromRole,
-} from '../../roles/roleService'
-import { getPermissions } from '../../permissions/permissionsService'
+} from '../services/roleService.js'
+import { getPermissions } from '../services/permissionsService.js'
 import {
   canManageRole,
   hasPermission,
   isProtectedRole,
-} from '../../auth/permissions.js'
+} from '../authorization.js'
 import RoleModal from '../components/RoleModal.jsx'
 
-/** @import { Role } from '../../roles/types.js' */
-/** @import { Permission } from '../../permissions/types.js' */
+/** @import { Role } from '../types.js' */
+/** @import { Permission } from '../types.js' */
 /**
  * @typedef {'Create' | 'Edit'} AccessItemMode
  */

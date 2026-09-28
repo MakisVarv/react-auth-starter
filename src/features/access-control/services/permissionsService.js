@@ -1,5 +1,5 @@
-import apiClient from '../../shared/api/apiClient'
-/** @import { Permission } from './types.js' */
+import apiClient from '../../../shared/api/apiClient'
+/** @import { Permission } from '../types.js' */
 
 /**
  * @param {string} accessToken

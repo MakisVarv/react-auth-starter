@@ -1,5 +1,5 @@
 /** @import { User } from '../users/types.js' */
-/** @import { Role } from '../roles/types.js' */
+/** @import { Role } from './types.js' */
 
 /**
  * @param {User | null} user

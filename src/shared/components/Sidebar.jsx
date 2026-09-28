@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
-import { useAuth } from '../../features/auth/useAuth'
-import { hasPermission } from '../../features/auth/permissions'
+import { useAuth } from '../../features/auth/hooks/useAuth'
+import { hasPermission } from '../../features/access-control/authorization'
 
 function Sidebar() {
   const { user } = useAuth()

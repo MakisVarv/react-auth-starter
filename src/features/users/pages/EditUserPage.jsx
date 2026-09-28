@@ -4,7 +4,7 @@ import UserForm from '../components/UserForm.jsx'
 import { Link, useNavigate } from 'react-router-dom'
 import { AppError } from '../../../shared/api/errors'
 import { toast } from 'sonner'
-import { useAuth } from '../../auth/useAuth'
+import { useAuth } from '../../auth/hooks/useAuth'
 import { useParams } from 'react-router-dom'
 import { editUser, getUser } from '../userService'
 function EditUserPage() {

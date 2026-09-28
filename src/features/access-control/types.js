@@ -1,4 +1,9 @@
-/** @import { Permission } from '../permissions/types.js' */
+/**
+ * @typedef {Object} Permission
+ * @property {string} id
+ * @property {string} name
+ * @property {string} description
+ */
 /**
  * @typedef {Object} Role
  * @property {string} id

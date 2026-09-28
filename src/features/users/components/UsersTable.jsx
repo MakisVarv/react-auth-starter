@@ -1,7 +1,7 @@
 /** @import { User } from '../types.js' */
 
 import { Link } from 'react-router-dom'
-import { canManageUser } from '../../auth/permissions.js'
+import { canManageUser } from '../../access-control/authorization.js'
 
 /**
  * @param {{

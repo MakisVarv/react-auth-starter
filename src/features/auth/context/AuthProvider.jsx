@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-/** @import { User } from '../users/types.js' */
-/** @import { LoginCredentials, AuthContextValue, UpdateProfileData } from './types.js' */
+/** @import { User } from '../../users/types.js' */
+/** @import { LoginCredentials, AuthContextValue, UpdateProfileData } from '../types.js' */
 import { AuthContext } from './AuthContext'
 import {
   login as loginRequest,
@@ -8,7 +8,7 @@ import {
   updateProfile as updateProfileRequest,
   refresh,
   getCurrentUser,
-} from './authService'
+} from '../authService'
 
 /**
  * @param {{ children: import('react').ReactNode }} props

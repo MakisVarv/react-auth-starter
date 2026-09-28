@@ -5,8 +5,8 @@ import './index.css'
 import App from './App.jsx'
 
 import { Toaster } from 'sonner'
-import { AuthProvider } from './features/auth/AuthProvider'
-import AuthGate from './features/auth/AuthGate'
+import { AuthProvider } from './features/auth/context/AuthProvider'
+import AuthGate from './features/auth/components/AuthGate'
 
 const rootElement = document.getElementById('root')
 

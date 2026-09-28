@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { useAuth } from '../features/auth/useAuth.js'
-import { hasPermission } from '../features/auth/permissions.js'
+import { useAuth } from '../features/auth/hooks/useAuth.js'
+import { hasPermission } from '../features/access-control/authorization.js'
 
 function HomePage() {
   const { user } = useAuth()

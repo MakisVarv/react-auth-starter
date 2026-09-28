@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router-dom'
-import { useAuth } from '../useAuth'
-import { hasAllPermissions } from '../permissions'
+import { useAuth } from '../hooks/useAuth'
+import { hasAllPermissions } from '../../access-control/authorization'
 /**
  * @param {{
  *   children: import('react').ReactNode,

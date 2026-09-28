@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AppError } from '../../../shared/api/errors'
 import { toast } from 'sonner'
-import { useAuth } from '../../auth/useAuth'
-import { getRoles } from '../../roles/roleService'
+import { useAuth } from '../../auth/hooks/useAuth'
+import { getRoles } from '../../access-control/services/roleService'
 import { createUser } from '../userService'
 import UserForm from '../components/UserForm.jsx'
-import { canAssignRole } from '../../auth/permissions'
-/** @import { Role } from '../../roles/types.js' */
+import { canAssignRole } from '../../access-control/authorization'
+/** @import { Role } from '../../access-control/types' */
 function CreateUserPage() {
   const [form, setForm] = useState({
     first_name: '',

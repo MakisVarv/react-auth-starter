@@ -1,4 +1,4 @@
-import apiClient from '../../shared/api/apiClient'
+import apiClient from '../../../shared/api/apiClient'
 /** @import { Role } from './types.js' */
 
 /**

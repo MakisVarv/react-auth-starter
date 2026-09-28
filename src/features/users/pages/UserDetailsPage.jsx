@@ -1,12 +1,15 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { useAuth } from '../../auth/useAuth'
+import { useAuth } from '../../auth/hooks/useAuth'
 import { useEffect, useState } from 'react'
 import { changeUserStatus, getUser } from '../userService'
 import { AppError } from '../../../shared/api/errors'
 import ChangeRoleModal from '../components/ChangeRoleModal'
 import DeleteUserModal from '../components/DeleteUserModal'
 import { toast } from 'sonner'
-import { canManageUser, hasPermission } from '../../auth/permissions'
+import {
+  canManageUser,
+  hasPermission,
+} from '../../access-control/authorization'
 /** @import { User } from '../types.js' */
 function UserDetailsPage() {
   const { userId } = useParams()

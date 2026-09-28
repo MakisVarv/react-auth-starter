@@ -1,6 +1,6 @@
 import { useState } from 'react'
 /** @import {ChangeEvent, SubmitEvent } from 'react'*/
-import { useAuth } from '../useAuth'
+import { useAuth } from '../hooks/useAuth'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { AppError } from '../../../shared/api/errors'
 import { toast } from 'sonner'

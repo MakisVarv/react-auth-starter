@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { isProtectedRole, MAX_ROLE_LEVEL } from '../../auth/permissions.js'
+import { isProtectedRole, MAX_ROLE_LEVEL } from '../authorization.js'
 
 /** @import {ChangeEvent, SubmitEvent } from 'react' */
 /** @import {User} from '../../users/types.js' */
-/** @import {Role} from '../../roles/types.js' */
+/** @import {Role} from '../types.js' */
 
 /**
  * @param {{

@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react'
-import { useAuth } from '../../auth/useAuth.js'
+import { useAuth } from '../../auth/hooks/useAuth.js'
 import { AppError } from '../../../shared/api/errors.js'
 import { changeUserStatus, getUsers } from '../userService.js'
 import { toast } from 'sonner'
 import UsersTable from '../components/UsersTable.jsx'
-import { getRoles } from '../../roles/roleService.js'
+import { getRoles } from '../../access-control/services/roleService.js'
 import { Link } from 'react-router-dom'
-import { hasPermission } from '../../auth/permissions.js'
+import { hasPermission } from '../../access-control/authorization.js'
 /** @import { User } from '../types.js' */
-/** @import { Role } from '../../roles/types.js' */
+/** @import { Role } from '../../access-control/types.js' */
 /** @import { Pagination } from '../../../shared/api/types.js' */
 
 function UsersPage() {

@@ -1,13 +1,13 @@
 /** @import { User } from '../types.js' */
-/** @import { Role } from '../../roles/types.js' */
+/** @import { Role } from '../../access-control/types.js' */
 /** @import {ChangeEvent } from 'react'*/
 import { useEffect, useState } from 'react'
-import { useAuth } from '../../auth/useAuth.js'
-import { getRoles } from '../../roles/roleService.js'
+import { useAuth } from '../../auth/hooks/useAuth.js'
+import { getRoles } from '../../access-control/services/roleService.js'
 import { toast } from 'sonner'
 import { AppError } from '../../../shared/api/errors.js'
 import { changeRole } from '../userService.js'
-import { canAssignRole } from '../../auth/permissions.js'
+import { canAssignRole } from '../../access-control/authorization.js'
 
 /**
  * @param {{
