@@ -1,6 +1,6 @@
 /**
  * @param {{
- *   error: string|null,
+ *   error: string | null,
  * }}props
  * */
 export function FormError({ error }) {
