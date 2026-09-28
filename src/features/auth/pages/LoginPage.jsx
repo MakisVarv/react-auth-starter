@@ -6,6 +6,7 @@ import { AppError } from '../../../shared/api/errors'
 import { toast } from 'sonner'
 import { FormField } from '../../../shared/components/form/FormField'
 import { PasswordField } from '../../../shared/components/form/PasswordField'
+import { FormError } from '../../../shared/components/form/FormError'
 
 function LoginPage() {
   const { login } = useAuth()
@@ -79,11 +80,7 @@ function LoginPage() {
         value={form.password}
         autoComplete="current-password"
       />
-      {error && (
-        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-          {error}
-        </p>
-      )}
+      <FormError error={error} />
       <button
         className="w-full rounded-lg bg-blue-600 px-4 py-2.5 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
         disabled={isSubmitting}
