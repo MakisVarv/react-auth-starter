@@ -29,9 +29,9 @@ export function PasswordField({
       >
         {label}
       </label>
-      <div className="relative">
+      <div className="mb-3 relative">
         <input
-          className="mb-3 w-full pl-3 pr-11 rounded-lg border border-slate-300 py-2.5 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          className="w-full pl-3 pr-11 rounded-lg border border-slate-300 py-2.5 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           placeholder={placeholder}
           name={name}
           type={isVisible ? 'text' : 'password'}

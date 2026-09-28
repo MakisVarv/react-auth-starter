@@ -103,14 +103,6 @@ function RegisterPage() {
         onChange={handleChange}
         autoComplete="tel"
       />
-      <FormField
-        name="phone"
-        label="Phone number"
-        placeholder="Phone number"
-        value={form.phone}
-        onChange={handleChange}
-        autoComplete="tel"
-      />
       <PasswordField
         label="Password"
         placeholder="Password"
