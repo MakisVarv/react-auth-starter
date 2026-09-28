@@ -14,6 +14,7 @@ import EditUserPage from './features/users/pages/EditUserPage'
 import UserDetailsPage from './features/users/pages/UserDetailsPage'
 import AdminLayout from './layouts/AdminLayout'
 import AccessManagementPage from './features/access-control/pages/AccessManagementPage'
+import AuthLayout from './layouts/AuthLayout'
 
 function App() {
   return (
@@ -28,22 +29,24 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/login"
-          element={
-            <GuestOnlyRoute>
-              <LoginPage />
-            </GuestOnlyRoute>
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            <GuestOnlyRoute>
-              <RegisterPage />
-            </GuestOnlyRoute>
-          }
-        />
+        <Route element={<AuthLayout />}>
+          <Route
+            path="/login"
+            element={
+              <GuestOnlyRoute>
+                <LoginPage />
+              </GuestOnlyRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <GuestOnlyRoute>
+                <RegisterPage />
+              </GuestOnlyRoute>
+            }
+          />
+        </Route>
         <Route element={<AdminLayout />}>
           <Route
             path="/dashboard"

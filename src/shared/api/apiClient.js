@@ -30,8 +30,8 @@ apiClient.interceptors.response.use(
     const errors = error.response?.data?.errors ?? null
 
     const message =
-      error.response?.data?.message ??
       getFirstValidationError(errors) ??
+      error.response?.data?.message ??
       (error.response
         ? 'Request failed. Please try again.'
         : 'Unable to connect to the server.')
