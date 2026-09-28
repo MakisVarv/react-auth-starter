@@ -4,6 +4,8 @@ import { useAuth } from '../useAuth'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { AppError } from '../../../shared/api/errors'
 import { toast } from 'sonner'
+import { FormField } from '../../../shared/components/FormField'
+import { PasswordField } from '../../../shared/components/PasswordField'
 
 function LoginPage() {
   const { login } = useAuth()
@@ -58,38 +60,23 @@ function LoginPage() {
       <h2 className="mb-6 text-2xl font-semibold tracking-tight text-slate-900">
         Login
       </h2>
-      <label
-        className="mb-1.5 block text-sm font-medium text-slate-700"
-        htmlFor="email"
-      >
-        E-mail
-      </label>
-      <input
-        className="mb-3 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-        placeholder="Email"
+      <FormField
         name="email"
-        id="email"
+        label="E-mail"
+        placeholder="Email"
         type="email"
         value={form.email}
+        required={true}
         onChange={handleChange}
-        required
         autoComplete="email"
       />
-      <label
-        className="mb-1.5 block text-sm font-medium text-slate-700"
-        htmlFor="password"
-      >
-        Password
-      </label>
-      <input
-        type="password"
-        className="mb-4 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+      <PasswordField
+        label="Password"
         placeholder="Password"
         name="password"
-        id="password"
-        value={form.password}
         onChange={handleChange}
-        required
+        required={true}
+        value={form.password}
         autoComplete="current-password"
       />
       {error && (

@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { AppError } from '../../../shared/api/errors'
 import { register } from '../authService.js'
 import { toast } from 'sonner'
+import { FormField } from '../../../shared/components/FormField'
+import { PasswordField } from '../../../shared/components/PasswordField'
 /** @import { RegisterCredentials } from '../types.js' */
 function RegisterPage() {
   const [form, setForm] = useState({
@@ -67,100 +69,64 @@ function RegisterPage() {
       <h2 className="mb-6 text-2xl font-semibold tracking-tight text-slate-900">
         Register
       </h2>
-      <label
-        className="mb-1.5 block text-sm font-medium text-slate-700"
-        htmlFor="first_name"
-      >
-        First Name
-      </label>
-      <input
-        className="mb-3 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-        placeholder="First Name"
+      <FormField
         name="first_name"
-        id="first_name"
+        label="First Name"
+        placeholder="First Name"
         value={form.first_name}
+        required={true}
         onChange={handleChange}
-        required
       />
-      <label
-        className="mb-1.5 block text-sm font-medium text-slate-700"
-        htmlFor="last_name"
-      >
-        Last Name
-      </label>
-      <input
-        className="mb-3 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-        placeholder="Last Name"
+      <FormField
         name="last_name"
-        id="last_name"
+        label="Last Name"
+        placeholder="Last Name"
         value={form.last_name}
+        required={true}
         onChange={handleChange}
-        required
       />
-      <label
-        className="mb-1.5 block text-sm font-medium text-slate-700"
-        htmlFor="email"
-      >
-        E-mail
-      </label>
-      <input
-        className="mb-3 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-        placeholder="Email"
+      <FormField
         name="email"
-        id="email"
+        label="E-mail"
+        placeholder="Email"
         type="email"
         value={form.email}
+        required={true}
         onChange={handleChange}
-        required
         autoComplete="email"
       />
-      <label
-        className="mb-1.5 block text-sm font-medium text-slate-700"
-        htmlFor="phone"
-      >
-        Phone number
-      </label>
-      <input
-        className="mb-3 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-        placeholder="Phone number"
+      <FormField
         name="phone"
-        id="phone"
+        label="Phone number"
+        placeholder="Phone number"
         value={form.phone}
         onChange={handleChange}
         autoComplete="tel"
       />
-      <label
-        className="mb-1.5 block text-sm font-medium text-slate-700"
-        htmlFor="password"
-      >
-        Password
-      </label>
-      <input
-        type="password"
-        className="mb-4 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+      <FormField
+        name="phone"
+        label="Phone number"
+        placeholder="Phone number"
+        value={form.phone}
+        onChange={handleChange}
+        autoComplete="tel"
+      />
+      <PasswordField
+        label="Password"
         placeholder="Password"
         name="password"
-        id="password"
-        value={form.password}
         onChange={handleChange}
-        required
+        required={true}
+        value={form.password}
         autoComplete="new-password"
       />
-      <label
-        className="mb-1.5 block text-sm font-medium text-slate-700"
-        htmlFor="confirm_password"
-      >
-        Confirm Password
-      </label>
-      <input
-        type="password"
-        className="mb-4 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+      <PasswordField
+        label="Confirm Password"
         placeholder="Confirm Password"
         name="confirm_password"
-        id="confirm_password"
-        value={form.confirm_password}
         onChange={handleChange}
-        required
+        required={true}
+        value={form.confirm_password}
         autoComplete="new-password"
       />
       {error && (
