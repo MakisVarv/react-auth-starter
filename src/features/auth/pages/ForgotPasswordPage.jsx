@@ -5,12 +5,15 @@ import { useState } from 'react'
 import { FormField } from '../../../shared/components/form/FormField'
 import { FormError } from '../../../shared/components/form/FormError'
 import { forgotPassword } from '../authService'
+import { FormSuccess } from '../../../shared/components/form/Formsuccess'
 export function ForgotPasswordPage() {
   const [form, setForm] = useState({
     email: '',
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
   const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
 
   /** @param {SubmitEvent<HTMLFormElement>} e */
   const handleSubmit = async (e) => {
@@ -18,7 +21,9 @@ export function ForgotPasswordPage() {
     setError('')
     setIsSubmitting(true)
     try {
-      await forgotPassword(form.email)
+      const data = await forgotPassword(form.email)
+      setSuccessMessage(data.message)
+      setIsSubmitted(true)
     } catch (e) {
       if (e instanceof AppError) {
         setError(e.message)
@@ -46,7 +51,7 @@ export function ForgotPasswordPage() {
       className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-lg"
     >
       <h2 className="mb-6 text-2xl font-semibold tracking-tight text-slate-900">
-        Reset password
+        Forgot password?
       </h2>
       <FormField
         name="email"
@@ -59,11 +64,12 @@ export function ForgotPasswordPage() {
         autoComplete="email"
       />
       <FormError error={error} />
+      {isSubmitted && <FormSuccess message={successMessage} />}
       <button
         className="w-full rounded-lg bg-blue-600 px-4 py-2.5 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
         disabled={isSubmitting}
       >
-        {isSubmitting ? 'Logging in ...' : 'Login'}
+        {isSubmitting ? 'Sending ...' : 'Send Reset Link'}
       </button>
     </form>
   )
