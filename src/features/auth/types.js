@@ -35,6 +35,7 @@
  * @property {boolean} isAuthLoading
  * @property {(credentials: LoginCredentials) => Promise<User>} login
  * @property {() => Promise<void>} logout
+ * @property {() => void} clearSession
  */
 
 export {}

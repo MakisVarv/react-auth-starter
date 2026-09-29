@@ -17,7 +17,7 @@ export function ChangePasswordPage() {
   const [error, setError] = useState('')
   const navigate = useNavigate()
   const { accessToken, clearSession } = useAuth()
-  if (!accessToken) return
+  if (!accessToken) return null
   /** @param {ChangeEvent<HTMLInputElement>} e */
   function handleChange(e) {
     const { name, value } = e.target
