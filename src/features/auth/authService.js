@@ -96,3 +96,15 @@ export async function forgotPassword(email) {
 
   return response.data
 }
+/**
+ * @param {string} token
+ * @param {string} newPassword
+ */
+export async function resetPassword(token, newPassword) {
+  const response = await apiClient.post('/auth/reset-password', {
+    token,
+    new_password: newPassword,
+  })
+
+  return response.data
+}
