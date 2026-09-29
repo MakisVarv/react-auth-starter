@@ -50,7 +50,7 @@ export function ResetPasswordPage() {
     }
     setIsSubmitting(true)
     try {
-      await resetPassword(token, new_password)
+      const data = await resetPassword(token, new_password)
       toast.success(data.message)
       navigate('/login', { replace: true })
     } catch (e) {

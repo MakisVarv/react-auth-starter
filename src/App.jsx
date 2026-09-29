@@ -57,14 +57,7 @@ function App() {
             </GuestOnlyRoute>
           }
         />
-        <Route
-          path="/reset-password"
-          element={
-            <GuestOnlyRoute>
-              <ResetPasswordPage />
-            </GuestOnlyRoute>
-          }
-        />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
       </Route>
       <Route element={<AdminLayout />}>
         <Route
