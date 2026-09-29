@@ -44,11 +44,7 @@ export function ChangePasswordPage() {
       const reauthData = await reAuthenticate(accessToken, current_password)
 
       const freshAccessToken = reauthData.access_token
-      const data = await changePassword(
-        freshAccessToken,
-        current_password,
-        new_password,
-      )
+      const data = await changePassword(freshAccessToken, new_password)
       toast.success(data.message)
       clearSession()
       navigate('/login', { replace: true })
