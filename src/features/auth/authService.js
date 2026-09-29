@@ -132,7 +132,7 @@ export async function changePassword(accessToken, newPassword) {
  * @param {string} currentPassword
  * @returns {Promise<{ access_token: string }>}
  */
-export async function reAuthenticate(accessToken, currentPassword) {
+export async function reauthenticate(accessToken, currentPassword) {
   const response = await apiClient.post(
     '/auth/reauthenticate',
     {

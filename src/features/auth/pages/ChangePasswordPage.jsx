@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { AppError } from '../../../shared/api/errors'
 import { PasswordField } from '../../../shared/components/form/PasswordField'
-import { changePassword, reAuthenticate } from '../authService'
+import { changePassword, reauthenticate } from '../authService'
 import { useAuth } from '../hooks/useAuth'
 /** @import {ChangeEvent, SubmitEvent } from 'react'*/
 export function ChangePasswordPage() {
@@ -41,7 +41,7 @@ export function ChangePasswordPage() {
     }
     setIsSubmitting(true)
     try {
-      const reauthData = await reAuthenticate(accessToken, current_password)
+      const reauthData = await reauthenticate(accessToken, current_password)
 
       const freshAccessToken = reauthData.access_token
       const data = await changePassword(freshAccessToken, new_password)
