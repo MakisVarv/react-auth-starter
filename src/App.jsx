@@ -17,6 +17,7 @@ import AccessManagementPage from './features/access-control/pages/AccessManageme
 import AuthLayout from './layouts/AuthLayout'
 import { ForgotPasswordPage } from './features/auth/pages/ForgotPasswordPage'
 import { ResetPasswordPage } from './features/auth/pages/ResetPasswordPage'
+import { ChangePasswordPage } from './features/auth/pages/ChangePasswordPage'
 
 function App() {
   return (
@@ -28,6 +29,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/change-password"
+          element={
+            <ProtectedRoute>
+              <ChangePasswordPage />
             </ProtectedRoute>
           }
         />
