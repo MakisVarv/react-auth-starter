@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { AppError } from '../../../shared/api/errors'
 import { PasswordField } from '../../../shared/components/form/PasswordField'
 import { changePassword } from '../authService'
+import { useAuth } from '../hooks/useAuth'
 /** @import {ChangeEvent, SubmitEvent } from 'react'*/
 export function ChangePasswordPage() {
   const [form, setForm] = useState({
@@ -15,7 +16,8 @@ export function ChangePasswordPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
-
+  const { accessToken, logout } = useAuth()
+  if (!accessToken) return
   /** @param {ChangeEvent<HTMLInputElement>} e */
   function handleChange(e) {
     const { name, value } = e.target
@@ -39,8 +41,13 @@ export function ChangePasswordPage() {
     }
     setIsSubmitting(true)
     try {
-      const data = await changePassword(current_password, new_password)
+      const data = await changePassword(
+        accessToken,
+        current_password,
+        new_password,
+      )
       toast.success(data.message)
+      logout()
       navigate('/login', { replace: true })
     } catch (e) {
       if (e instanceof AppError) {
@@ -68,7 +75,7 @@ export function ChangePasswordPage() {
         onChange={handleChange}
         required={true}
         value={form.current_password}
-        autoComplete="new-password"
+        autoComplete="current-password"
       />
       <PasswordField
         label="New Password"

@@ -109,14 +109,27 @@ export async function resetPassword(token, newPassword) {
   return response.data
 }
 /**
+ * @param {string} accessToken
  * @param {string} currentPassword
  * @param {string} newPassword
  */
-export async function changePassword(currentPassword, newPassword) {
-  const response = await apiClient.post('/auth/change-password', {
-    current_password: currentPassword,
-    new_password: newPassword,
-  })
+export async function changePassword(
+  accessToken,
+  currentPassword,
+  newPassword,
+) {
+  const response = await apiClient.post(
+    '/auth/change-password',
+    {
+      current_password: currentPassword,
+      new_password: newPassword,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  )
 
   return response.data
 }
