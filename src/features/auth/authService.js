@@ -133,3 +133,23 @@ export async function changePassword(
 
   return response.data
 }
+/**
+ * @param {string} accessToken
+ * @param {string} currentPassword
+ * @returns {Promise<{ access_token: string }>}
+ */
+export async function reAuthenticate(accessToken, currentPassword) {
+  const response = await apiClient.post(
+    '/auth/reauthenticate',
+    {
+      current_password: currentPassword,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  )
+
+  return response.data
+}
