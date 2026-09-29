@@ -16,7 +16,7 @@ export function ChangePasswordPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
-  const { accessToken, logout } = useAuth()
+  const { accessToken, clearSession } = useAuth()
   if (!accessToken) return
   /** @param {ChangeEvent<HTMLInputElement>} e */
   function handleChange(e) {
@@ -47,7 +47,7 @@ export function ChangePasswordPage() {
         new_password,
       )
       toast.success(data.message)
-      logout()
+      clearSession()
       navigate('/login', { replace: true })
     } catch (e) {
       if (e instanceof AppError) {

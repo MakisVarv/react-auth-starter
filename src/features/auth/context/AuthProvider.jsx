@@ -66,6 +66,10 @@ export function AuthProvider({ children }) {
       setAccessToken(null)
     }
   }
+  function clearSession() {
+    setUser(null)
+    setAccessToken(null)
+  }
   /**
    * @param {UpdateProfileData} data
    * @returns {Promise<User>}
@@ -88,6 +92,7 @@ export function AuthProvider({ children }) {
     updateProfile,
     login,
     logout,
+    clearSession,
     accessToken,
   }
 
