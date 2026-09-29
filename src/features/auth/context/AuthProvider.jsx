@@ -62,8 +62,7 @@ export function AuthProvider({ children }) {
     try {
       await logoutRequest()
     } finally {
-      setUser(null)
-      setAccessToken(null)
+      clearSession()
     }
   }
   function clearSession() {
