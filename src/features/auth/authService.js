@@ -129,6 +129,25 @@ export async function changePassword(accessToken, newPassword) {
 }
 /**
  * @param {string} accessToken
+ * @param {string} newEmail
+ */
+export async function changeEmail(accessToken, newEmail) {
+  const response = await apiClient.post(
+    '/auth/change-email',
+    {
+      new_email: newEmail,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  )
+
+  return response.data
+}
+/**
+ * @param {string} accessToken
  * @param {string} currentPassword
  * @returns {Promise<{ access_token: string }>}
  */
