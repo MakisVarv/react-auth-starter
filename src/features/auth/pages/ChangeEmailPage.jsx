@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { AppError } from '../../../shared/api/errors'
 import { PasswordField } from '../../../shared/components/form/PasswordField'
-import { changePassword, reauthenticate } from '../authService'
+import { changeEmail, reauthenticate } from '../authService'
 import { useAuth } from '../hooks/useAuth'
 import { FormField } from '../../../shared/components/form/FormField'
 /** @import {ChangeEvent, SubmitEvent } from 'react'*/
@@ -40,7 +40,7 @@ export function ChangeEmailPage() {
       const reauthData = await reauthenticate(accessToken, current_password)
 
       const freshAccessToken = reauthData.access_token
-      const data = await changePassword(freshAccessToken, email)
+      const data = await changeEmail(freshAccessToken, email)
       toast.success(data.message)
       clearSession()
       navigate('/login', { replace: true })
@@ -61,7 +61,7 @@ export function ChangeEmailPage() {
       className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-lg"
     >
       <h2 className="mb-6 text-2xl font-semibold tracking-tight text-slate-900">
-        Change password
+        Change Email
       </h2>
       <PasswordField
         label="Current Password"
