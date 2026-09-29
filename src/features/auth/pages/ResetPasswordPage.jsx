@@ -51,7 +51,7 @@ export function ResetPasswordPage() {
     setIsSubmitting(true)
     try {
       await resetPassword(token, new_password)
-      toast.success('Password changed successfully.')
+      toast.success(data.message)
       navigate('/login', { replace: true })
     } catch (e) {
       if (e instanceof AppError) {

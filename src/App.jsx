@@ -16,6 +16,7 @@ import AdminLayout from './layouts/AdminLayout'
 import AccessManagementPage from './features/access-control/pages/AccessManagementPage'
 import AuthLayout from './layouts/AuthLayout'
 import { ForgotPasswordPage } from './features/auth/pages/ForgotPasswordPage'
+import { ResetPasswordPage } from './features/auth/pages/ResetPasswordPage'
 
 function App() {
   return (
@@ -53,6 +54,14 @@ function App() {
           element={
             <GuestOnlyRoute>
               <ForgotPasswordPage />
+            </GuestOnlyRoute>
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <GuestOnlyRoute>
+              <ResetPasswordPage />
             </GuestOnlyRoute>
           }
         />
