@@ -18,6 +18,7 @@ import AuthLayout from './layouts/AuthLayout'
 import { ForgotPasswordPage } from './features/auth/pages/ForgotPasswordPage'
 import { ResetPasswordPage } from './features/auth/pages/ResetPasswordPage'
 import { ChangePasswordPage } from './features/auth/pages/ChangePasswordPage'
+import { ChangeEmailPage } from './features/auth/pages/ChangeEmailPage'
 
 function App() {
   return (
@@ -37,6 +38,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ChangePasswordPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/change-email"
+          element={
+            <ProtectedRoute>
+              <ChangeEmailPage />
             </ProtectedRoute>
           }
         />
