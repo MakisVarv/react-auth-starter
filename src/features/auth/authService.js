@@ -166,3 +166,19 @@ export async function reauthenticate(accessToken, currentPassword) {
 
   return response.data
 }
+/**
+ * @param {string} accessToken
+ */
+export async function logoutAll(accessToken) {
+  const response = await apiClient.post(
+    '/auth/logout-all',
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  )
+
+  return response.data
+}
