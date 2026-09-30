@@ -120,48 +120,48 @@ describe('AuthProvider session restoration', () => {
 
     expect(screen.getByText('No token')).toBeInTheDocument()
   })
-})
-it('updates the session after login succeeds', async () => {
-  vi.mocked(refresh).mockResolvedValue(null)
+  it('updates the session after login succeeds', async () => {
+    vi.mocked(refresh).mockResolvedValue(null)
 
-  vi.mocked(loginRequest).mockResolvedValue({
-    access_token: 'login-token',
-    user: testUser,
+    vi.mocked(loginRequest).mockResolvedValue({
+      access_token: 'login-token',
+      user: testUser,
+    })
+
+    const user = userEvent.setup()
+
+    renderProvider()
+
+    expect(await screen.findByText('Anonymous')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Login' }))
+
+    expect(await screen.findByText('test@example.com')).toBeInTheDocument()
+
+    expect(screen.getByText('login-token')).toBeInTheDocument()
+
+    expect(loginRequest).toHaveBeenCalledWith({
+      email: 'test@example.com',
+      password: 'Password123!',
+    })
   })
 
-  const user = userEvent.setup()
+  it('clears the session after logout', async () => {
+    vi.mocked(refresh).mockResolvedValue('restored-token')
+    vi.mocked(getCurrentUser).mockResolvedValue(testUser)
+    vi.mocked(logoutRequest).mockResolvedValue(undefined)
 
-  renderProvider()
+    const user = userEvent.setup()
 
-  expect(await screen.findByText('Anonymous')).toBeInTheDocument()
+    renderProvider()
 
-  await user.click(screen.getByRole('button', { name: 'Login' }))
+    expect(await screen.findByText('test@example.com')).toBeInTheDocument()
 
-  expect(await screen.findByText('test@example.com')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Logout' }))
 
-  expect(screen.getByText('login-token')).toBeInTheDocument()
+    expect(await screen.findByText('Anonymous')).toBeInTheDocument()
+    expect(screen.getByText('No token')).toBeInTheDocument()
 
-  expect(loginRequest).toHaveBeenCalledWith({
-    email: 'test@example.com',
-    password: 'Password123!',
+    expect(logoutRequest).toHaveBeenCalledOnce()
   })
-})
-
-it('clears the session after logout', async () => {
-  vi.mocked(refresh).mockResolvedValue('restored-token')
-  vi.mocked(getCurrentUser).mockResolvedValue(testUser)
-  vi.mocked(logoutRequest).mockResolvedValue(undefined)
-
-  const user = userEvent.setup()
-
-  renderProvider()
-
-  expect(await screen.findByText('test@example.com')).toBeInTheDocument()
-
-  await user.click(screen.getByRole('button', { name: 'Logout' }))
-
-  expect(await screen.findByText('Anonymous')).toBeInTheDocument()
-  expect(screen.getByText('No token')).toBeInTheDocument()
-
-  expect(logoutRequest).toHaveBeenCalledOnce()
 })
