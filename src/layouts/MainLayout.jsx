@@ -2,12 +2,13 @@ import { Outlet } from 'react-router-dom'
 import NavBar from './components/Navbar'
 function MainLayout() {
   return (
-    <>
+    <div className="flex min-h-screen flex-col">
       <NavBar />
-      <main>
+
+      <main className="flex flex-1">
         <Outlet />
       </main>
-    </>
+    </div>
   )
 }
 
