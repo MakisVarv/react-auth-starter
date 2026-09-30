@@ -19,6 +19,7 @@ import { ForgotPasswordPage } from './features/auth/pages/ForgotPasswordPage'
 import { ResetPasswordPage } from './features/auth/pages/ResetPasswordPage'
 import { ChangePasswordPage } from './features/auth/pages/ChangePasswordPage'
 import { ChangeEmailPage } from './features/auth/pages/ChangeEmailPage'
+import { LogoutAllPage } from './features/auth/pages/LogoutAllPage'
 
 function App() {
   return (
@@ -46,6 +47,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ChangeEmailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="//logout-all"
+          element={
+            <ProtectedRoute>
+              <LogoutAllPage />
             </ProtectedRoute>
           }
         />
