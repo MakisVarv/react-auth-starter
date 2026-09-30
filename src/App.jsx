@@ -20,6 +20,7 @@ import { ResetPasswordPage } from './features/auth/pages/ResetPasswordPage'
 import { ChangePasswordPage } from './features/auth/pages/ChangePasswordPage'
 import { ChangeEmailPage } from './features/auth/pages/ChangeEmailPage'
 import { LogoutAllPage } from './features/auth/pages/LogoutAllPage'
+import SecurityPageLayout from './features/auth/components/SecurityPageLayout'
 
 function App() {
   return (
@@ -34,30 +35,82 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/change-password"
-          element={
-            <ProtectedRoute>
-              <ChangePasswordPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/change-email"
-          element={
-            <ProtectedRoute>
-              <ChangeEmailPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/logout-all"
-          element={
-            <ProtectedRoute>
-              <LogoutAllPage />
-            </ProtectedRoute>
-          }
-        />
+        <Route element={<SecurityPageLayout />}>
+          <Route
+            path="/change-password"
+            element={
+              <ProtectedRoute>
+                <ChangePasswordPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/change-email"
+            element={
+              <ProtectedRoute>
+                <ChangeEmailPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/logout-all"
+            element={
+              <ProtectedRoute>
+                <LogoutAllPage />
+              </ProtectedRoute>
+            }
+          />
+        </Route>{' '}
+        <Route element={<AdminLayout />}>
+          <Route
+            path="/dashboard"
+            element={
+              <PermissionRoute permissions={['dashboard.read']}>
+                <DashboardPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/accessControl"
+            element={
+              <PermissionRoute permissions={['role.read', 'permission.read']}>
+                <AccessManagementPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <PermissionRoute permissions={['user.read']}>
+                <UsersPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/users/new"
+            element={
+              <PermissionRoute permissions={['user.create']}>
+                <CreateUserPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/users/:userId/edit"
+            element={
+              <PermissionRoute permissions={['user.update']}>
+                <EditUserPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/users/:userId"
+            element={
+              <PermissionRoute permissions={['user.read']}>
+                <UserDetailsPage />
+              </PermissionRoute>
+            }
+          />
+        </Route>
       </Route>
       <Route element={<AuthLayout />}>
         <Route
@@ -85,56 +138,6 @@ function App() {
           }
         />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
-      </Route>
-      <Route element={<AdminLayout />}>
-        <Route
-          path="/dashboard"
-          element={
-            <PermissionRoute permissions={['dashboard.read']}>
-              <DashboardPage />
-            </PermissionRoute>
-          }
-        />
-        <Route
-          path="/accessControl"
-          element={
-            <PermissionRoute permissions={['role.read', 'permission.read']}>
-              <AccessManagementPage />
-            </PermissionRoute>
-          }
-        />
-        <Route
-          path="/users"
-          element={
-            <PermissionRoute permissions={['user.read']}>
-              <UsersPage />
-            </PermissionRoute>
-          }
-        />
-        <Route
-          path="/users/new"
-          element={
-            <PermissionRoute permissions={['user.create']}>
-              <CreateUserPage />
-            </PermissionRoute>
-          }
-        />
-        <Route
-          path="/users/:userId/edit"
-          element={
-            <PermissionRoute permissions={['user.update']}>
-              <EditUserPage />
-            </PermissionRoute>
-          }
-        />
-        <Route
-          path="/users/:userId"
-          element={
-            <PermissionRoute permissions={['user.read']}>
-              <UserDetailsPage />
-            </PermissionRoute>
-          }
-        />
       </Route>
     </Routes>
   )

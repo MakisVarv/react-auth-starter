@@ -16,7 +16,7 @@ function NavBar() {
   }
   return (
     <header className="border-b border-slate-200 bg-white">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
         <div className="flex items-center gap-2">
           <NavLink to="/" className={navLinkClass}>
             Home
