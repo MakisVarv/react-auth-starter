@@ -51,7 +51,7 @@ function App() {
           }
         />
         <Route
-          path="//logout-all"
+          path="/logout-all"
           element={
             <ProtectedRoute>
               <LogoutAllPage />
