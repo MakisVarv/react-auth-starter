@@ -60,7 +60,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-        </Route>{' '}
+        </Route>
         <Route element={<AdminLayout />}>
           <Route
             path="/dashboard"

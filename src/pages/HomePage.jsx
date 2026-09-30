@@ -34,7 +34,7 @@ function HomePage() {
   ]
 
   return (
-    <main className="flex-1 bg-slate-50">
+    <div className="flex-1 bg-slate-50">
       <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-3xl text-center">
@@ -148,7 +148,7 @@ function HomePage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   )
 }
 

@@ -16,7 +16,7 @@ function Sidebar() {
   ]
 
   return (
-    <aside className=" w-60 border-r border-slate-200 bg-blue-900 px-3 py-6">
+    <aside className="w-60 border-r border-slate-200 bg-blue-900 px-3 py-6">
       <nav className="flex flex-col gap-1">
         {items
           .filter((item) =>
