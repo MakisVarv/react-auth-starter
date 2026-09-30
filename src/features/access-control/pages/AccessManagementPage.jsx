@@ -27,6 +27,8 @@ import {
 import { GripVertical } from 'lucide-react'
 /** @import { Role } from '../types.js' */
 /** @import { Permission } from '../types.js' */
+/** @import { ReactNode } from 'react'*/
+
 /**
  * @typedef {'Create' | 'Edit'} AccessItemMode
  */
@@ -44,6 +46,15 @@ import { GripVertical } from 'lucide-react'
  *   description: string,
  *   level: number,
  * }} RoleFormValues
+ */
+
+/**
+ * @param {{
+ *   permission: Permission,
+ *   children: ReactNode,
+ *   disabled: boolean,
+ *   source: 'assigned' | 'available'
+ * }} props
  */
 function DraggablePermissionCard({ permission, children, disabled, source }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -79,6 +90,12 @@ function DraggablePermissionCard({ permission, children, disabled, source }) {
     </div>
   )
 }
+/**
+ * @param {{
+ *   id: 'assigned' | 'available',
+ *   children: ReactNode
+ * }} props
+ */
 function PermissionDropZone({ id, children }) {
   const { setNodeRef, isOver } = useDroppable({
     id,
@@ -101,7 +118,9 @@ function AccessManagementPage() {
   const [permissions, setPermissions] = useState(
     /** @type {Permission[]} */ ([]),
   )
-  const [activePermissionId, setActivePermissionId] = useState(null)
+  const [activePermissionId, setActivePermissionId] = useState(
+    /** @type {string | null} */ (null),
+  )
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [selectedRoleId, setSelectedRoleId] = useState('')
