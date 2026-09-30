@@ -129,7 +129,7 @@ function UsersPage() {
   }
   return (
     <div className="flex-1 bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto w-full max-w-350">
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold text-slate-900">Users</h1>

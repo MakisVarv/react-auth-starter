@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FormError } from '../../../shared/components/form/FormError'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -54,30 +54,38 @@ export function LogoutAllPage() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-lg"
-    >
-      <h2 className="mb-6 text-2xl font-semibold tracking-tight text-slate-900">
-        Log out from all sessions
-      </h2>
-      <PasswordField
-        label="Current Password"
-        placeholder="Current Password"
-        name="current_password"
-        onChange={handleChange}
-        required={true}
-        value={form.current_password}
-        autoComplete="current-password"
-      />
-      <FormError error={error} />
-      <button
-        type="submit"
-        className="w-full rounded-lg bg-blue-600 px-4 py-2.5 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-        disabled={isSubmitting}
+    <div className="w-full max-w-md">
+      <Link
+        to="/profile"
+        className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition hover:text-slate-900"
       >
-        {isSubmitting ? 'Logging Out...' : 'Log out from all sessions'}
-      </button>
-    </form>
+        ← Back to Profile
+      </Link>
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-lg"
+      >
+        <h2 className="mb-6 text-2xl font-semibold tracking-tight text-slate-900">
+          Log out from all sessions
+        </h2>
+        <PasswordField
+          label="Current Password"
+          placeholder="Current Password"
+          name="current_password"
+          onChange={handleChange}
+          required={true}
+          value={form.current_password}
+          autoComplete="current-password"
+        />
+        <FormError error={error} />
+        <button
+          type="submit"
+          className="w-full rounded-lg bg-blue-600 px-4 py-2.5 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Logging Out...' : 'Log out from all sessions'}
+        </button>
+      </form>
+    </div>
   )
 }
