@@ -45,9 +45,13 @@ import { GripVertical } from 'lucide-react'
  *   level: number,
  * }} RoleFormValues
  */
-function DraggablePermissionCard({ permission, children }) {
+function DraggablePermissionCard({ permission, children, disabled, source }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: permission.id,
+    disabled,
+    data: {
+      source,
+    },
   })
 
   return (
@@ -61,7 +65,11 @@ function DraggablePermissionCard({ permission, children }) {
         type="button"
         {...listeners}
         {...attributes}
-        className="flex h-8 w-6 shrink-0 cursor-grab touch-none items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 active:cursor-grabbing"
+        className={`flex h-8 w-6 shrink-0 items-center justify-center rounded-md text-slate-400 transition ${
+          disabled
+            ? 'cursor-not-allowed opacity-40'
+            : 'cursor-grab hover:bg-slate-100 hover:text-slate-600 active:cursor-grabbing'
+        }`}
         aria-label={`Drag ${permission.name}`}
       >
         <GripVertical size={16} />
@@ -79,7 +87,7 @@ function PermissionDropZone({ id, children }) {
   return (
     <div
       ref={setNodeRef}
-      className={`min-h-[320px] rounded-xl border-2 border-dashed p-4 transition ${
+      className={`min-h-100 rounded-xl border-2 border-dashed p-4 transition ${
         isOver ? 'border-blue-500 bg-blue-50' : 'border-slate-300 bg-slate-50'
       }`}
     >
@@ -127,6 +135,7 @@ function AccessManagementPage() {
       !assignedPermissions?.some((assigned) => assigned.id === permission.id),
   )
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const isUpdatingPermission = updatingPermissionId !== ''
 
   const loadAccessData = useCallback(async () => {
     try {
@@ -317,7 +326,7 @@ function AccessManagementPage() {
   }
   return (
     <div className="flex-1 bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto w-full max-w-350">
         <div className="mb-6">
           <h1 className="text-2xl font-semibold text-slate-900">
             Access Management
@@ -328,7 +337,7 @@ function AccessManagementPage() {
           </p>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="grid gap-6  lg:grid-cols-[360px_minmax(0,1fr)]">
           <div>
             <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
               <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
@@ -460,9 +469,13 @@ function AccessManagementPage() {
                   }}
                   onDragEnd={(event) => {
                     const permissionId = String(event.active.id)
+                    const source = event.active.data.current?.source
                     const target = event.over?.id
 
                     setActivePermissionId(null)
+                    if (!target || source === target) {
+                      return
+                    }
 
                     if (target === 'assigned') {
                       addPermission(permissionId)
@@ -473,6 +486,9 @@ function AccessManagementPage() {
                       removePermission(permissionId)
                     }
                   }}
+                  onDragCancel={() => {
+                    setActivePermissionId(null)
+                  }}
                 >
                   <div className="grid gap-6 p-4 lg:grid-cols-2">
                     <PermissionDropZone id="assigned">
@@ -480,11 +496,15 @@ function AccessManagementPage() {
                         Assigned · {assignedPermissions?.length ?? 0}
                       </h3>
 
-                      <div className="max-h-[28vh] space-y-1.5 overflow-y-auto pr-1">
+                      <div className="max-h-[42vh] space-y-1.5 overflow-y-auto pr-1">
                         {assignedPermissions?.map((permission) => (
                           <DraggablePermissionCard
                             key={permission.id}
                             permission={permission}
+                            disabled={
+                              !canAssignPermissions || isUpdatingPermission
+                            }
+                            source="assigned"
                           >
                             <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
                               <div className="min-w-0">
@@ -496,23 +516,6 @@ function AccessManagementPage() {
                                   {permission.description}
                                 </p>
                               </div>
-
-                              {canAssignPermissions && (
-                                <button
-                                  disabled={
-                                    updatingPermissionId === permission.id
-                                  }
-                                  onClick={() =>
-                                    removePermission(permission.id)
-                                  }
-                                  aria-label="Remove permission from role"
-                                  title="Remove permission"
-                                  type="button"
-                                  className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-red-200 bg-red-50 text-lg font-semibold text-red-700 transition hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-300 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
-                                >
-                                  ×
-                                </button>
-                              )}
                             </div>
                           </DraggablePermissionCard>
                         ))}
@@ -523,11 +526,15 @@ function AccessManagementPage() {
                       <h3 className="mb-3 text-sm font-semibold text-slate-900">
                         Available · {availablePermissions.length}
                       </h3>
-                      <div className="max-h-[28vh] space-y-1.5 overflow-y-auto pr-1">
+                      <div className="max-h-[42vh] space-y-1.5 overflow-y-auto pr-1">
                         {availablePermissions.map((permission) => (
                           <DraggablePermissionCard
                             key={permission.id}
                             permission={permission}
+                            disabled={
+                              !canAssignPermissions || isUpdatingPermission
+                            }
+                            source="available"
                           >
                             <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
                               <div className="min-w-0">
@@ -539,19 +546,6 @@ function AccessManagementPage() {
                                   {permission.description}
                                 </p>
                               </div>
-
-                              {canAssignPermissions && (
-                                <button
-                                  type="button"
-                                  onClick={() => addPermission(permission.id)}
-                                  disabled={
-                                    updatingPermissionId === permission.id
-                                  }
-                                  className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-lg font-semibold text-emerald-700 transition hover:bg-emerald-50"
-                                >
-                                  +
-                                </button>
-                              )}
                             </div>
                           </DraggablePermissionCard>
                         ))}
