@@ -18,7 +18,13 @@ import {
   isProtectedRole,
 } from '../authorization.js'
 import RoleModal from '../components/RoleModal.jsx'
-
+import {
+  DndContext,
+  DragOverlay,
+  useDraggable,
+  useDroppable,
+} from '@dnd-kit/core'
+import { GripVertical } from 'lucide-react'
 /** @import { Role } from '../types.js' */
 /** @import { Permission } from '../types.js' */
 /**
@@ -39,12 +45,55 @@ import RoleModal from '../components/RoleModal.jsx'
  *   level: number,
  * }} RoleFormValues
  */
+function DraggablePermissionCard({ permission, children }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: permission.id,
+  })
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`flex w-full items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2.5 shadow-sm transition ${
+        isDragging ? 'opacity-40' : 'hover:border-slate-300 hover:shadow'
+      }`}
+    >
+      <button
+        type="button"
+        {...listeners}
+        {...attributes}
+        className="flex h-8 w-6 shrink-0 cursor-grab touch-none items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 active:cursor-grabbing"
+        aria-label={`Drag ${permission.name}`}
+      >
+        <GripVertical size={16} />
+      </button>
+
+      {children}
+    </div>
+  )
+}
+function PermissionDropZone({ id, children }) {
+  const { setNodeRef, isOver } = useDroppable({
+    id,
+  })
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`min-h-[320px] rounded-xl border-2 border-dashed p-4 transition ${
+        isOver ? 'border-blue-500 bg-blue-50' : 'border-slate-300 bg-slate-50'
+      }`}
+    >
+      {children}
+    </div>
+  )
+}
 function AccessManagementPage() {
   const { user, accessToken } = useAuth()
   const [roles, setRoles] = useState(/** @type {Role[]} */ ([]))
   const [permissions, setPermissions] = useState(
     /** @type {Permission[]} */ ([]),
   )
+  const [activePermissionId, setActivePermissionId] = useState(null)
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [selectedRoleId, setSelectedRoleId] = useState('')
@@ -62,7 +111,9 @@ function AccessManagementPage() {
       item: null,
     }),
   )
-
+  const activePermission = permissions.find(
+    (permission) => permission.id === activePermissionId,
+  )
   const selectedRole = roles.find((role) => role.id === selectedRoleId)
   const canAssignPermissions =
     hasPermission(user, 'role.assign_permission') &&
@@ -76,6 +127,7 @@ function AccessManagementPage() {
       !assignedPermissions?.some((assigned) => assigned.id === permission.id),
   )
   const [isSubmitting, setIsSubmitting] = useState(false)
+
   const loadAccessData = useCallback(async () => {
     try {
       if (accessToken === null) return
@@ -402,78 +454,124 @@ function AccessManagementPage() {
                     </p>
                   </div>
                 </div>
-                <div className="space-y-6 p-4">
-                  <section>
-                    <h3 className="mb-3 text-sm font-semibold text-slate-900">
-                      Assigned · {assignedPermissions?.length ?? 0}
-                    </h3>
+                <DndContext
+                  onDragStart={(event) => {
+                    setActivePermissionId(String(event.active.id))
+                  }}
+                  onDragEnd={(event) => {
+                    const permissionId = String(event.active.id)
+                    const target = event.over?.id
 
-                    <div className="max-h-[28vh] space-y-1.5 overflow-y-auto pr-1">
-                      {assignedPermissions?.map((permission) => (
-                        <div
-                          key={permission.id}
-                          className="flex items-center justify-between rounded-lg border border-slate-200 px-3 py-1.5 gap-3"
-                        >
-                          <div className="overflow-hidden w-full text-left">
-                            <p className="text-sm font-medium text-slate-900">
-                              {permission.name}
-                            </p>
-                            <p className="text-xs text-slate-500">
-                              {permission.description}
-                            </p>
-                          </div>
-                          {canAssignPermissions && (
-                            <button
-                              disabled={updatingPermissionId === permission.id}
-                              onClick={() => removePermission(permission.id)}
-                              aria-label="Remove permission from role"
-                              title="Remove permission"
-                              type="button"
-                              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-red-200 bg-red-50 text-lg font-semibold text-red-700 transition hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-300 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
-                            >
-                              ×
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </section>
+                    setActivePermissionId(null)
 
-                  <section>
-                    <h3 className="mb-3 text-sm font-semibold text-slate-900">
-                      Available · {availablePermissions.length}
-                    </h3>
-                    <div className="max-h-[28vh] space-y-1.5 overflow-y-auto pr-1">
-                      {availablePermissions.map((permission) => (
-                        <div
-                          key={permission.id}
-                          className="flex items-center justify-between rounded-lg border border-slate-200 px-3 py-1.5 gap-3"
-                        >
-                          <div className="overflow-hidden w-full text-left">
-                            <p className="text-sm font-medium text-slate-900">
-                              {permission.name}
-                            </p>
-                            <p className="text-xs text-slate-500">
-                              {permission.description}
-                            </p>
-                          </div>
-                          {canAssignPermissions && (
-                            <button
-                              disabled={updatingPermissionId === permission.id}
-                              type="button"
-                              onClick={() => addPermission(permission.id)}
-                              aria-label="Add permission to role"
-                              title="Add permission"
-                              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-emerald-200 bg-emerald-50 text-lg font-semibold text-emerald-700 transition hover:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-300 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
-                            >
-                              +
-                            </button>
-                          )}
+                    if (target === 'assigned') {
+                      addPermission(permissionId)
+                      return
+                    }
+
+                    if (target === 'available') {
+                      removePermission(permissionId)
+                    }
+                  }}
+                >
+                  <div className="grid gap-6 p-4 lg:grid-cols-2">
+                    <PermissionDropZone id="assigned">
+                      <h3 className="mb-3 text-sm font-semibold text-slate-900">
+                        Assigned · {assignedPermissions?.length ?? 0}
+                      </h3>
+
+                      <div className="max-h-[28vh] space-y-1.5 overflow-y-auto pr-1">
+                        {assignedPermissions?.map((permission) => (
+                          <DraggablePermissionCard
+                            key={permission.id}
+                            permission={permission}
+                          >
+                            <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-medium text-slate-900">
+                                  {permission.name}
+                                </p>
+
+                                <p className="truncate text-xs text-slate-500">
+                                  {permission.description}
+                                </p>
+                              </div>
+
+                              {canAssignPermissions && (
+                                <button
+                                  disabled={
+                                    updatingPermissionId === permission.id
+                                  }
+                                  onClick={() =>
+                                    removePermission(permission.id)
+                                  }
+                                  aria-label="Remove permission from role"
+                                  title="Remove permission"
+                                  type="button"
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-red-200 bg-red-50 text-lg font-semibold text-red-700 transition hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-300 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
+                                >
+                                  ×
+                                </button>
+                              )}
+                            </div>
+                          </DraggablePermissionCard>
+                        ))}
+                      </div>
+                    </PermissionDropZone>
+
+                    <PermissionDropZone id="available">
+                      <h3 className="mb-3 text-sm font-semibold text-slate-900">
+                        Available · {availablePermissions.length}
+                      </h3>
+                      <div className="max-h-[28vh] space-y-1.5 overflow-y-auto pr-1">
+                        {availablePermissions.map((permission) => (
+                          <DraggablePermissionCard
+                            key={permission.id}
+                            permission={permission}
+                          >
+                            <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-medium text-slate-900">
+                                  {permission.name}
+                                </p>
+
+                                <p className="truncate text-xs text-slate-500">
+                                  {permission.description}
+                                </p>
+                              </div>
+
+                              {canAssignPermissions && (
+                                <button
+                                  type="button"
+                                  onClick={() => addPermission(permission.id)}
+                                  disabled={
+                                    updatingPermissionId === permission.id
+                                  }
+                                  className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-lg font-semibold text-emerald-700 transition hover:bg-emerald-50"
+                                >
+                                  +
+                                </button>
+                              )}
+                            </div>
+                          </DraggablePermissionCard>
+                        ))}
+                      </div>
+                    </PermissionDropZone>
+                    <DragOverlay dropAnimation={null}>
+                      {activePermission ? (
+                        <div className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 shadow-xl">
+                          <p className="text-sm font-medium text-slate-900">
+                            {activePermission.name}
+                          </p>
+
+                          <p className="text-xs text-slate-500">
+                            {activePermission.description}
+                          </p>
                         </div>
-                      ))}
-                    </div>
-                  </section>
-                </div>
+                      ) : null}
+                    </DragOverlay>
+                  </div>
+                </DndContext>
               </section>
             </div>
           )}
