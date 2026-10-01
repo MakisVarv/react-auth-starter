@@ -104,16 +104,18 @@ describe('apiClient transparent refresh', () => {
     })
 
     const request = apiClient.get('/protected')
-
-    await expect(request).rejects.toMatchObject({
-      name: 'AppError',
-      message: 'Refresh token expired.',
-      status: 401,
-    })
-    expect(onSessionExpired).toHaveBeenCalledOnce()
-    expect(refreshAccessToken).toHaveBeenCalledOnce()
-    expect(getAccessToken()).toBeNull()
-    unsubscribe()
+    try {
+      await expect(request).rejects.toMatchObject({
+        name: 'AppError',
+        message: 'Refresh token expired.',
+        status: 401,
+      })
+      expect(onSessionExpired).toHaveBeenCalledOnce()
+      expect(refreshAccessToken).toHaveBeenCalledOnce()
+      expect(getAccessToken()).toBeNull()
+    } finally {
+      unsubscribe()
+    }
   })
   it('clears the expired access token when refresh is unavailable', async () => {
     setAccessToken('expired-token')
