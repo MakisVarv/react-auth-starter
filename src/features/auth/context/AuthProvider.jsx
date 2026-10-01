@@ -20,9 +20,7 @@ import {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(/** @type {User | null} */ (null))
   const [isAuthLoading, setIsAuthLoading] = useState(true)
-  const [accessToken, setAccessTokenState] = useState(
-    /** @type {string | null} */ (null),
-  )
+
   const hasRestoredSession = useRef(false)
 
   useEffect(() => {
@@ -45,10 +43,8 @@ export function AuthProvider({ children }) {
         const user = await getCurrentUser()
 
         setUser(user)
-        setAccessTokenState(token)
       } catch {
         setUser(null)
-        setAccessTokenState(null)
         clearAccessToken()
       } finally {
         setIsAuthLoading(false)
@@ -64,7 +60,6 @@ export function AuthProvider({ children }) {
   async function login(credentials) {
     const data = await loginRequest(credentials)
 
-    setAccessTokenState(data.access_token)
     setAccessToken(data.access_token)
     setUser(data.user)
 
@@ -80,7 +75,6 @@ export function AuthProvider({ children }) {
   }
   function clearSession() {
     setUser(null)
-    setAccessTokenState(null)
     clearAccessToken()
   }
   /**
@@ -88,10 +82,6 @@ export function AuthProvider({ children }) {
    * @returns {Promise<User>}
    */
   async function updateProfile(data) {
-    if (accessToken === null) {
-      throw new Error('Not authenticated')
-    }
-
     const updatedUser = await updateProfileRequest(data)
 
     setUser(updatedUser)
@@ -106,7 +96,6 @@ export function AuthProvider({ children }) {
     login,
     logout,
     clearSession,
-    accessToken,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

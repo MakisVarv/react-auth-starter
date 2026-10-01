@@ -4,7 +4,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthProvider } from '../features/auth/context/AuthProvider'
 import { useAuth } from '../features/auth/hooks/useAuth'
 import userEvent from '@testing-library/user-event'
-
+import {
+  clearAccessToken,
+  getAccessToken,
+} from '../shared/api/accessTokenStore'
 import {
   login as loginRequest,
   logout as logoutRequest,
@@ -37,7 +40,7 @@ const testUser = {
 }
 
 function AuthStateProbe() {
-  const { user, accessToken, isAuthLoading, login, logout } = useAuth()
+  const { user, isAuthLoading, login, logout } = useAuth()
 
   if (isAuthLoading) {
     return <p>Loading</p>
@@ -46,7 +49,6 @@ function AuthStateProbe() {
   return (
     <div>
       <p>{user ? user.email : 'Anonymous'}</p>
-      <p>{accessToken ?? 'No token'}</p>
 
       <button
         type="button"
@@ -78,6 +80,7 @@ function renderProvider() {
 describe('AuthProvider session restoration', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    clearAccessToken()
   })
 
   it('restores the authenticated session when refresh succeeds', async () => {
@@ -90,7 +93,7 @@ describe('AuthProvider session restoration', () => {
 
     expect(await screen.findByText('test@example.com')).toBeInTheDocument()
 
-    expect(screen.getByText('restored-token')).toBeInTheDocument()
+    expect(getAccessToken()).toBe('restored-token')
 
     expect(refresh).toHaveBeenCalledOnce()
     expect(getCurrentUser).toHaveBeenCalledOnce()
@@ -105,7 +108,7 @@ describe('AuthProvider session restoration', () => {
       expect(screen.getByText('Anonymous')).toBeInTheDocument()
     })
 
-    expect(screen.getByText('No token')).toBeInTheDocument()
+    expect(getAccessToken()).toBeNull()
     expect(getCurrentUser).not.toHaveBeenCalled()
   })
 
@@ -118,7 +121,7 @@ describe('AuthProvider session restoration', () => {
       expect(screen.getByText('Anonymous')).toBeInTheDocument()
     })
 
-    expect(screen.getByText('No token')).toBeInTheDocument()
+    expect(getAccessToken()).toBeNull()
   })
   it('updates the session after login succeeds', async () => {
     vi.mocked(refresh).mockResolvedValue(null)
@@ -138,7 +141,7 @@ describe('AuthProvider session restoration', () => {
 
     expect(await screen.findByText('test@example.com')).toBeInTheDocument()
 
-    expect(screen.getByText('login-token')).toBeInTheDocument()
+    expect(getAccessToken()).toBe('login-token')
 
     expect(loginRequest).toHaveBeenCalledWith({
       email: 'test@example.com',
@@ -160,7 +163,7 @@ describe('AuthProvider session restoration', () => {
     await user.click(screen.getByRole('button', { name: 'Logout' }))
 
     expect(await screen.findByText('Anonymous')).toBeInTheDocument()
-    expect(screen.getByText('No token')).toBeInTheDocument()
+    expect(getAccessToken()).toBeNull()
 
     expect(logoutRequest).toHaveBeenCalledOnce()
   })

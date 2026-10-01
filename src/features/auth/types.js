@@ -31,7 +31,6 @@
  * @typedef {Object} AuthContextValue
  * @property {(data: UpdateProfileData) => Promise<User>} updateProfile
  * @property {User | null} user
- * @property {string | null} accessToken
  * @property {boolean} isAuthLoading
  * @property {(credentials: LoginCredentials) => Promise<User>} login
  * @property {() => Promise<void>} logout
