@@ -6,6 +6,8 @@ import {
   setAccessToken,
 } from './accessTokenStore'
 import { refreshAccessToken } from './tokenRefresh'
+/** @type {Promise<string | null> | null} */
+let refreshPromise = null
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -51,12 +53,19 @@ apiClient.interceptors.response.use(
       !originalRequest._retry
     if (shouldAttemptRefresh) {
       originalRequest._retry = true
+
+      if (refreshPromise === null) {
+        refreshPromise = refreshAccessToken()
+      }
+      const activeRefresh = refreshPromise
       try {
-        const newAccessToken = await refreshAccessToken()
+        const newAccessToken = await refreshPromise
         if (newAccessToken !== null) {
           setAccessToken(newAccessToken)
           originalRequest.headers.delete('Authorization')
           return apiClient(originalRequest)
+        } else {
+          clearAccessToken()
         }
       } catch (refreshError) {
         clearAccessToken()
@@ -72,6 +81,10 @@ apiClient.interceptors.response.use(
           throw new AppError(refreshMessage, refreshStatus, refreshErrors)
         }
         throw refreshError
+      } finally {
+        if (refreshPromise === activeRefresh) {
+          refreshPromise = null
+        }
       }
     }
     const message =
