@@ -50,6 +50,8 @@ apiClient.interceptors.response.use(
       const newAccessToken = await refreshAccessToken()
       if (newAccessToken !== null) {
         setAccessToken(newAccessToken)
+        originalRequest.headers.delete('Authorization')
+        return apiClient(originalRequest)
       }
     }
     const message =
