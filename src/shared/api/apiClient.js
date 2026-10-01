@@ -79,9 +79,9 @@ apiClient.interceptors.response.use(
           return apiClient(originalRequest)
         } else {
           clearAccessToken()
+          notifySessionExpired()
         }
       } catch (refreshError) {
-        clearAccessToken()
         if (axios.isAxiosError(refreshError)) {
           const refreshStatus = refreshError.response?.status ?? null
 
