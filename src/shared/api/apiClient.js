@@ -37,7 +37,16 @@ apiClient.interceptors.response.use(
   (error) => {
     const status = error.response?.status ?? null
     const errors = error.response?.data?.errors ?? null
-
+    const code = error.response?.data?.code ?? null
+    const originalRequest = error.config
+    const shouldAttemptRefresh =
+      status === 401 &&
+      code === 'access_token_expired' &&
+      originalRequest &&
+      !originalRequest._retry
+    if (shouldAttemptRefresh) {
+      originalRequest._retry = true
+    }
     const message =
       getFirstValidationError(errors) ??
       error.response?.data?.message ??

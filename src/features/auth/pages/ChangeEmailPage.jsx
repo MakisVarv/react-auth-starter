@@ -16,8 +16,8 @@ export function ChangeEmailPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
-  const { accessToken, clearSession } = useAuth()
-  if (!accessToken) return null
+  const { clearSession } = useAuth()
+
   /** @param {ChangeEvent<HTMLInputElement>} e */
   function handleChange(e) {
     const { name, value } = e.target
@@ -37,7 +37,7 @@ export function ChangeEmailPage() {
 
     setIsSubmitting(true)
     try {
-      const reauthData = await reauthenticate(accessToken, current_password)
+      const reauthData = await reauthenticate(current_password)
 
       const freshAccessToken = reauthData.access_token
       const data = await changeEmail(freshAccessToken, email)
