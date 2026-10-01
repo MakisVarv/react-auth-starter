@@ -113,7 +113,7 @@ function PermissionDropZone({ id, children }) {
   )
 }
 function AccessManagementPage() {
-  const { user, accessToken } = useAuth()
+  const { user } = useAuth()
   const [roles, setRoles] = useState(/** @type {Role[]} */ ([]))
   const [permissions, setPermissions] = useState(
     /** @type {Permission[]} */ ([]),
@@ -158,12 +158,11 @@ function AccessManagementPage() {
 
   const loadAccessData = useCallback(async () => {
     try {
-      if (accessToken === null) return
       setIsLoading(true)
       setError('')
       const [rolesData, permissionsData] = await Promise.all([
-        getRoles(accessToken),
-        getPermissions(accessToken),
+        getRoles(),
+        getPermissions(),
       ])
       setRoles(rolesData)
       setPermissions(permissionsData)
@@ -176,7 +175,7 @@ function AccessManagementPage() {
     } finally {
       setIsLoading(false)
     }
-  }, [accessToken])
+  }, [])
   useEffect(() => {
     async function load() {
       await loadAccessData()
@@ -206,12 +205,10 @@ function AccessManagementPage() {
    */
   async function addPermission(permissionId) {
     try {
-      if (accessToken === null) return
       setUpdatingPermissionId(permissionId)
       const updatedRole = await addPermissionToRole(
         selectedRoleId,
         permissionId,
-        accessToken,
       )
       setRoles((currentRoles) =>
         currentRoles.map((role) =>
@@ -233,12 +230,10 @@ function AccessManagementPage() {
    */
   async function handleModalSubmit(values) {
     try {
-      if (accessToken === null) return
-
       setIsSubmitting(true)
 
       if (modal.mode === 'Create') {
-        const newRole = await createRole(values, accessToken)
+        const newRole = await createRole(values)
 
         setRoles((currentRoles) => [...currentRoles, newRole])
       }
@@ -254,7 +249,7 @@ function AccessManagementPage() {
           ? { description: values.description }
           : values
 
-        const updatedRole = await editRole(modal.item.id, payload, accessToken)
+        const updatedRole = await editRole(modal.item.id, payload)
 
         setRoles((currentRoles) =>
           currentRoles.map((role) =>
@@ -279,12 +274,10 @@ function AccessManagementPage() {
    */
   async function removePermission(permissionId) {
     try {
-      if (accessToken === null) return
       setUpdatingPermissionId(permissionId)
       const updatedRole = await removePermissionFromRole(
         selectedRoleId,
         permissionId,
-        accessToken,
       )
       setRoles((currentRoles) =>
         currentRoles.map((role) =>
@@ -306,9 +299,7 @@ function AccessManagementPage() {
    */
   async function handleDeleteRole(roleId) {
     try {
-      if (accessToken === null) return
-
-      await deleteRole(roleId, accessToken)
+      await deleteRole(roleId)
 
       setRoles((currentRoles) =>
         currentRoles.filter((role) => role.id !== roleId),
