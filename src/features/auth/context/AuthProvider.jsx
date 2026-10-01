@@ -38,7 +38,7 @@ export function AuthProvider({ children }) {
           clearAccessToken()
           return
         }
-        const user = await getCurrentUser(token)
+        const user = await getCurrentUser()
         setUser(user)
         setAccessTokenState(token)
         setAccessToken(token)
@@ -88,7 +88,7 @@ export function AuthProvider({ children }) {
       throw new Error('Not authenticated')
     }
 
-    const updatedUser = await updateProfileRequest(data, accessToken)
+    const updatedUser = await updateProfileRequest(data)
 
     setUser(updatedUser)
 
