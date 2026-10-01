@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { AppError } from './errors'
-import { getAccessToken } from './accessTokenStore'
+import { getAccessToken, setAccessToken } from './accessTokenStore'
+import { refreshAccessToken } from './tokenRefresh'
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -34,7 +35,7 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
 
-  (error) => {
+  async (error) => {
     const status = error.response?.status ?? null
     const errors = error.response?.data?.errors ?? null
     const code = error.response?.data?.code ?? null
@@ -46,6 +47,10 @@ apiClient.interceptors.response.use(
       !originalRequest._retry
     if (shouldAttemptRefresh) {
       originalRequest._retry = true
+      const newAccessToken = await refreshAccessToken()
+      if (newAccessToken !== null) {
+        setAccessToken(newAccessToken)
+      }
     }
     const message =
       getFirstValidationError(errors) ??
