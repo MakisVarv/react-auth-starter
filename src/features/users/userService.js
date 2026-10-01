@@ -10,9 +10,6 @@ import apiClient from '../../shared/api/apiClient'
 export async function getUsers(params, accessToken) {
   const response = await apiClient.get('/users/', {
     params,
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
   })
   return response.data
 }
@@ -23,11 +20,7 @@ export async function getUsers(params, accessToken) {
  */
 
 export async function getUser(userId, accessToken) {
-  const response = await apiClient.get(`/users/${userId}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  })
+  const response = await apiClient.get(`/users/${userId}`)
   return response.data
 }
 /**
@@ -43,11 +36,7 @@ export async function getUser(userId, accessToken) {
  * @returns {Promise<User>}
  */
 export async function createUser(payload, accessToken) {
-  const response = await apiClient.post('/users/', payload, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  })
+  const response = await apiClient.post('/users/', payload)
   return response.data
 }
 /**
@@ -62,11 +51,7 @@ export async function createUser(payload, accessToken) {
  * @returns {Promise<User>}
  */
 export async function editUser(userId, payload, accessToken) {
-  const response = await apiClient.patch(`/users/${userId}`, payload, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  })
+  const response = await apiClient.patch(`/users/${userId}`, payload)
   return response.data
 }
 /**
@@ -76,15 +61,9 @@ export async function editUser(userId, payload, accessToken) {
  * @returns {Promise<User>}
  */
 export async function changeUserStatus(userId, isActive, accessToken) {
-  const response = await apiClient.patch(
-    `/users/${userId}/status`,
-    { is_active: isActive },
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
-  )
+  const response = await apiClient.patch(`/users/${userId}/status`, {
+    is_active: isActive,
+  })
   return response.data
 }
 /**
@@ -94,15 +73,9 @@ export async function changeUserStatus(userId, isActive, accessToken) {
  * @returns {Promise<User>}
  */
 export async function changeRole(userId, roleId, accessToken) {
-  const response = await apiClient.patch(
-    `/users/${userId}/role`,
-    { role_id: roleId },
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
-  )
+  const response = await apiClient.patch(`/users/${userId}/role`, {
+    role_id: roleId,
+  })
   return response.data
 }
 /**
@@ -111,9 +84,5 @@ export async function changeRole(userId, roleId, accessToken) {
  * @returns {Promise<void>}
  */
 export async function deleteUser(userId, accessToken) {
-  await apiClient.delete(`/users/${userId}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  })
+  await apiClient.delete(`/users/${userId}`)
 }

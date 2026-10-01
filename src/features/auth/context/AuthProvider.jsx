@@ -9,7 +9,10 @@ import {
   refresh,
   getCurrentUser,
 } from '../authService'
-
+import {
+  setAccessToken,
+  clearAccessToken,
+} from '../../../shared/api/accessTokenStore'
 /**
  * @param {{ children: import('react').ReactNode }} props
  */
@@ -17,7 +20,7 @@ import {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(/** @type {User | null} */ (null))
   const [isAuthLoading, setIsAuthLoading] = useState(true)
-  const [accessToken, setAccessToken] = useState(
+  const [accessToken, setAccessTokenState] = useState(
     /** @type {string | null} */ (null),
   )
   const hasRestoredSession = useRef(false)
@@ -31,13 +34,18 @@ export function AuthProvider({ children }) {
       setIsAuthLoading(true)
       try {
         const token = await refresh()
-        if (!token) return
+        if (!token) {
+          clearAccessToken()
+          return
+        }
         const user = await getCurrentUser(token)
         setUser(user)
+        setAccessTokenState(token)
         setAccessToken(token)
       } catch {
         setUser(null)
-        setAccessToken(null)
+        setAccessTokenState(null)
+        clearAccessToken()
       } finally {
         setIsAuthLoading(false)
       }
@@ -52,6 +60,7 @@ export function AuthProvider({ children }) {
   async function login(credentials) {
     const data = await loginRequest(credentials)
 
+    setAccessTokenState(data.access_token)
     setAccessToken(data.access_token)
     setUser(data.user)
 
@@ -67,7 +76,8 @@ export function AuthProvider({ children }) {
   }
   function clearSession() {
     setUser(null)
-    setAccessToken(null)
+    setAccessTokenState(null)
+    clearAccessToken()
   }
   /**
    * @param {UpdateProfileData} data

@@ -61,31 +61,21 @@ export async function refresh() {
 }
 
 /**
- * @param {string} accessToken
  * @returns {Promise<User>}
  */
 
-export async function getCurrentUser(accessToken) {
-  const response = await apiClient.get('/auth/me', {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  })
+export async function getCurrentUser() {
+  const response = await apiClient.get('/auth/me')
   return response.data
 }
 
 /**
  * @param {UpdateProfileData} data
- * @param {string} accessToken
  * @returns {Promise<User>}
  */
 
-export async function updateProfile(data, accessToken) {
-  const response = await apiClient.patch('/auth/me', data, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  })
+export async function updateProfile(data) {
+  const response = await apiClient.patch('/auth/me', data)
   return response.data
 }
 /**
@@ -113,17 +103,9 @@ export async function resetPassword(token, newPassword) {
  * @param {string} newPassword
  */
 export async function changePassword(accessToken, newPassword) {
-  const response = await apiClient.post(
-    '/auth/change-password',
-    {
-      new_password: newPassword,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
-  )
+  const response = await apiClient.post('/auth/change-password', {
+    new_password: newPassword,
+  })
 
   return response.data
 }
@@ -132,17 +114,9 @@ export async function changePassword(accessToken, newPassword) {
  * @param {string} newEmail
  */
 export async function changeEmail(accessToken, newEmail) {
-  const response = await apiClient.post(
-    '/auth/change-email',
-    {
-      new_email: newEmail,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
-  )
+  const response = await apiClient.post('/auth/change-email', {
+    new_email: newEmail,
+  })
 
   return response.data
 }
@@ -152,33 +126,14 @@ export async function changeEmail(accessToken, newEmail) {
  * @returns {Promise<{ access_token: string }>}
  */
 export async function reauthenticate(accessToken, currentPassword) {
-  const response = await apiClient.post(
-    '/auth/reauthenticate',
-    {
-      current_password: currentPassword,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
-  )
+  const response = await apiClient.post('/auth/reauthenticate', {
+    current_password: currentPassword,
+  })
 
   return response.data
 }
-/**
- * @param {string} accessToken
- */
-export async function logoutAll(accessToken) {
-  const response = await apiClient.post(
-    '/auth/logout-all',
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
-  )
+export async function logoutAll() {
+  const response = await apiClient.post('/auth/logout-all', {})
 
   return response.data
 }

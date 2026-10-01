@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { AppError } from './errors'
+import { getAccessToken } from './accessTokenStore'
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -21,7 +22,15 @@ function getFirstValidationError(errors) {
 
   return null
 }
+apiClient.interceptors.request.use((config) => {
+  const token = getAccessToken()
 
+  if (token && !config.headers.Authorization) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+
+  return config
+})
 apiClient.interceptors.response.use(
   (response) => response,
 
