@@ -160,11 +160,15 @@ export async function reauthenticate(accessToken, currentPassword) {
  * @param {string} accessToken
  */
 export async function logoutAll(accessToken) {
-  const response = await apiClient.post('/auth/logout-all', {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
+  const response = await apiClient.post(
+    '/auth/logout-all',
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     },
-  })
+  )
 
   return response.data
 }
