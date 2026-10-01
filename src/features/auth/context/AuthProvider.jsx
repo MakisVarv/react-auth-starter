@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 /** @import { User } from '../../users/types.js' */
 /** @import { LoginCredentials, AuthContextValue, UpdateProfileData } from '../types.js' */
 import { AuthContext } from './AuthContext'
@@ -13,6 +13,7 @@ import {
   setAccessToken,
   clearAccessToken,
 } from '../../../shared/api/accessTokenStore'
+import { subscribeToSessionExpired } from '../../../shared/auth/sessionEvents'
 /**
  * @param {{ children: import('react').ReactNode }} props
  */
@@ -23,6 +24,13 @@ export function AuthProvider({ children }) {
 
   const hasRestoredSession = useRef(false)
 
+  const clearSession = useCallback(() => {
+    setUser(null)
+    clearAccessToken()
+  }, [])
+  useEffect(() => {
+    return subscribeToSessionExpired(clearSession)
+  }, [clearSession])
   useEffect(() => {
     if (hasRestoredSession.current) {
       return
@@ -72,10 +80,6 @@ export function AuthProvider({ children }) {
     } finally {
       clearSession()
     }
-  }
-  function clearSession() {
-    setUser(null)
-    clearAccessToken()
   }
   /**
    * @param {UpdateProfileData} data
