@@ -46,7 +46,6 @@ export function AuthProvider({ children }) {
 
         setUser(user)
         setAccessTokenState(token)
-        setAccessToken(token)
       } catch {
         setUser(null)
         setAccessTokenState(null)

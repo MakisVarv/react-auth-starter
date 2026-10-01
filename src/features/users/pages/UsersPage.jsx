@@ -36,7 +36,7 @@ function UsersPage() {
     async function loadRoles() {
       try {
         if (accessToken === null) return
-        const data = await getRoles(accessToken)
+        const data = await getRoles()
         setRoles(data)
       } catch {
         toast.error('Could not fetch roles')
@@ -57,17 +57,14 @@ function UsersPage() {
         if (accessToken === null) return
         setIsLoading(true)
         setError('')
-        const data = await getUsers(
-          {
-            page,
-            page_size: pageSize,
-            search: debouncedSearch,
-            sort,
-            role: role || undefined,
-            is_active: isActive === '' ? undefined : isActive === 'true',
-          },
-          accessToken,
-        )
+        const data = await getUsers({
+          page,
+          page_size: pageSize,
+          search: debouncedSearch,
+          sort,
+          role: role || undefined,
+          is_active: isActive === '' ? undefined : isActive === 'true',
+        })
         setUsers(data.items)
         setPagination(data.pagination)
       } catch (e) {
@@ -112,7 +109,7 @@ function UsersPage() {
     try {
       if (accessToken === null) return
       setError('')
-      await changeUserStatus(user.id, !user.is_active, accessToken)
+      await changeUserStatus(user.id, !user.is_active)
       setRefreshKey((current) => current + 1)
       toast.success(
         user.is_active

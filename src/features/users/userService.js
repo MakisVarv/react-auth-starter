@@ -3,11 +3,10 @@ import apiClient from '../../shared/api/apiClient'
 
 /**
  * @param {UsersQueryParams} params
- * @param {string} accessToken
  * @returns {Promise<UsersResponse>}
  */
 
-export async function getUsers(params, accessToken) {
+export async function getUsers(params) {
   const response = await apiClient.get('/users/', {
     params,
   })
@@ -15,11 +14,10 @@ export async function getUsers(params, accessToken) {
 }
 /**
  * @param {string} userId
- * @param {string} accessToken
  * @returns {Promise<User>}
  */
 
-export async function getUser(userId, accessToken) {
+export async function getUser(userId) {
   const response = await apiClient.get(`/users/${userId}`)
   return response.data
 }
@@ -32,10 +30,9 @@ export async function getUser(userId, accessToken) {
  *   phone: string | null,
  *   role_id: string
  * }} payload
- * @param {string} accessToken
  * @returns {Promise<User>}
  */
-export async function createUser(payload, accessToken) {
+export async function createUser(payload) {
   const response = await apiClient.post('/users/', payload)
   return response.data
 }
@@ -47,20 +44,18 @@ export async function createUser(payload, accessToken) {
  *   email?: string,
  *   phone?: string | null
  * }} payload
- * @param {string} accessToken
  * @returns {Promise<User>}
  */
-export async function editUser(userId, payload, accessToken) {
+export async function editUser(userId, payload) {
   const response = await apiClient.patch(`/users/${userId}`, payload)
   return response.data
 }
 /**
  * @param {string} userId
  * @param {boolean} isActive
- * @param {string} accessToken
  * @returns {Promise<User>}
  */
-export async function changeUserStatus(userId, isActive, accessToken) {
+export async function changeUserStatus(userId, isActive) {
   const response = await apiClient.patch(`/users/${userId}/status`, {
     is_active: isActive,
   })
@@ -69,10 +64,9 @@ export async function changeUserStatus(userId, isActive, accessToken) {
 /**
  * @param {string} userId
  * @param {string} roleId
- * @param {string} accessToken
  * @returns {Promise<User>}
  */
-export async function changeRole(userId, roleId, accessToken) {
+export async function changeRole(userId, roleId) {
   const response = await apiClient.patch(`/users/${userId}/role`, {
     role_id: roleId,
   })
@@ -80,9 +74,8 @@ export async function changeRole(userId, roleId, accessToken) {
 }
 /**
  * @param {string} userId
- * @param {string} accessToken
  * @returns {Promise<void>}
  */
-export async function deleteUser(userId, accessToken) {
+export async function deleteUser(userId) {
   await apiClient.delete(`/users/${userId}`)
 }
