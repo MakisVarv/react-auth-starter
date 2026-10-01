@@ -60,6 +60,7 @@ apiClient.interceptors.response.use(
       status === 401 &&
       code === 'access_token_expired' &&
       originalRequest &&
+      originalRequest._usesManagedAccessToken &&
       !originalRequest._retry
     if (shouldAttemptRefresh) {
       originalRequest._retry = true
