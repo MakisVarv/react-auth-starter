@@ -67,9 +67,10 @@ apiClient.interceptors.response.use(
       if (refreshPromise === null) {
         refreshPromise = refreshAccessToken()
       }
+
       const activeRefresh = refreshPromise
       try {
-        const newAccessToken = await refreshPromise
+        const newAccessToken = await activeRefresh
         if (newAccessToken !== null) {
           setAccessToken(newAccessToken)
           originalRequest.headers.delete('Authorization')
