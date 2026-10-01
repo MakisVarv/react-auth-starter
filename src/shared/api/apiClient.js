@@ -54,6 +54,7 @@ apiClient.interceptors.response.use(
     const status = error.response?.status ?? null
     const errors = error.response?.data?.errors ?? null
     const code = error.response?.data?.code ?? null
+    /** @type {ApiRequestConfig | undefined} */
     const originalRequest = error.config
     const shouldAttemptRefresh =
       status === 401 &&
