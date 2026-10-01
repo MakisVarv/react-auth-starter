@@ -137,11 +137,11 @@ export async function changeEmail(freshAccessToken, newEmail) {
   return response.data
 }
 /**
- * @param {string} freshAccessToken
+ * @param {string} accessToken
  * @param {string} currentPassword
  * @returns {Promise<{ access_token: string }>}
  */
-export async function reauthenticate(freshAccessToken, currentPassword) {
+export async function reauthenticate(accessToken, currentPassword) {
   const response = await apiClient.post(
     '/auth/reauthenticate',
     {
@@ -149,7 +149,7 @@ export async function reauthenticate(freshAccessToken, currentPassword) {
     },
     {
       headers: {
-        Authorization: `Bearer ${freshAccessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     },
   )
