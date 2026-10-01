@@ -12,6 +12,8 @@ import {
   setAccessToken,
 } from './accessTokenStore'
 import { refreshAccessToken } from './tokenRefresh'
+import { notifySessionExpired } from '../../features/auth/sessionEvents'
+
 /** @type {Promise<string | null> | null} */
 let refreshPromise = null
 
@@ -78,9 +80,11 @@ apiClient.interceptors.response.use(
           return apiClient(originalRequest)
         } else {
           clearAccessToken()
+          notifySessionExpired()
         }
       } catch (refreshError) {
         clearAccessToken()
+        notifySessionExpired()
         if (axios.isAxiosError(refreshError)) {
           const refreshStatus = refreshError.response?.status ?? null
           const refreshErrors = refreshError.response?.data?.errors ?? null
