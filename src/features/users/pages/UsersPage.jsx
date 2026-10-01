@@ -24,7 +24,7 @@ function UsersPage() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [sort, setSort] = useState('id')
-  const { user, accessToken } = useAuth()
+  const { user } = useAuth()
   const [role, setRole] = useState('')
   const [roles, setRoles] = useState(/** @type {Role[]} */ ([]))
   const [isActive, setIsActive] = useState('')
@@ -35,7 +35,6 @@ function UsersPage() {
   useEffect(() => {
     async function loadRoles() {
       try {
-        if (accessToken === null) return
         const data = await getRoles()
         setRoles(data)
       } catch {
@@ -43,7 +42,7 @@ function UsersPage() {
       }
     }
     loadRoles()
-  }, [accessToken])
+  }, [])
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setDebouncedSearch(search)
@@ -54,7 +53,6 @@ function UsersPage() {
   useEffect(() => {
     async function loadUsers() {
       try {
-        if (accessToken === null) return
         setIsLoading(true)
         setError('')
         const data = await getUsers({
@@ -78,16 +76,7 @@ function UsersPage() {
       }
     }
     loadUsers()
-  }, [
-    accessToken,
-    page,
-    pageSize,
-    debouncedSearch,
-    isActive,
-    role,
-    sort,
-    refreshKey,
-  ])
+  }, [page, pageSize, debouncedSearch, isActive, role, sort, refreshKey])
   /**
    * @param {string} field
    */
@@ -107,7 +96,6 @@ function UsersPage() {
    */
   async function handleStatusChange(user) {
     try {
-      if (accessToken === null) return
       setError('')
       await changeUserStatus(user.id, !user.is_active)
       setRefreshKey((current) => current + 1)

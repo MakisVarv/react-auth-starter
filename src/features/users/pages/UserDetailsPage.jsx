@@ -13,7 +13,7 @@ import {
 /** @import { User } from '../types.js' */
 function UserDetailsPage() {
   const { userId } = useParams()
-  const { user: currentUser, accessToken } = useAuth()
+  const { user: currentUser } = useAuth()
   const [loadError, setLoadError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState(/** @type {User | null } */ (null))
@@ -25,11 +25,11 @@ function UserDetailsPage() {
   const navigate = useNavigate()
   useEffect(() => {
     async function loadUser() {
-      if (!userId || accessToken === null) return
+      if (!userId) return
       try {
         setLoadError('')
         setIsLoading(true)
-        const data = await getUser(userId, accessToken)
+        const data = await getUser(userId)
         setUser(data)
       } catch (e) {
         if (e instanceof AppError) {
@@ -42,7 +42,7 @@ function UserDetailsPage() {
       }
     }
     loadUser()
-  }, [userId, accessToken])
+  }, [userId])
   if (currentUser === null) return
 
   const handleModalClose = () => {
@@ -63,13 +63,7 @@ function UserDetailsPage() {
    */
   async function handleStatusChange(user) {
     try {
-      if (accessToken === null) return
-
-      const updatedUser = await changeUserStatus(
-        user.id,
-        !user.is_active,
-        accessToken,
-      )
+      const updatedUser = await changeUserStatus(user.id, !user.is_active)
       setUser(updatedUser)
       toast.success(
         user.is_active

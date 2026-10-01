@@ -19,7 +19,7 @@ function CreateUserPage() {
     phone: '',
     role_id: '',
   })
-  const { user, accessToken } = useAuth()
+  const { user } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [roles, setRoles] = useState(/** @type {Role[]} */ ([]))
@@ -27,15 +27,14 @@ function CreateUserPage() {
   useEffect(() => {
     async function loadRoles() {
       try {
-        if (accessToken === null) return
-        const data = await getRoles(accessToken)
+        const data = await getRoles()
         setRoles(data)
       } catch {
         toast.error('Could not fetch roles')
       }
     }
     loadRoles()
-  }, [accessToken])
+  }, [])
   if (user === null) return
   const assignableRoles = roles.filter((role) => canAssignRole(user, role))
   /** @param {ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>} e */
@@ -63,10 +62,9 @@ function CreateUserPage() {
       ...userDetails,
       phone: userDetails.phone.trim() || null,
     }
-    if (accessToken === null) return
     setIsSubmitting(true)
     try {
-      await createUser(payload, accessToken)
+      await createUser(payload)
       toast.success('User created successfully.')
       navigate('/users', { replace: true })
     } catch (e) {

@@ -17,7 +17,7 @@ import { canAssignRole } from '../../access-control/authorization.js'
  * }} props
  */
 function ChangeRoleModal({ user, onClose, onRoleChange }) {
-  const { user: actor, accessToken } = useAuth()
+  const { user: actor } = useAuth()
   const [roles, setRoles] = useState(/** @type {Role[]} */ ([]))
   const [selectedRoleId, setSelectedRoleId] = useState(user.role.id)
   const [error, setError] = useState('')
@@ -25,23 +25,21 @@ function ChangeRoleModal({ user, onClose, onRoleChange }) {
   useEffect(() => {
     async function loadRoles() {
       try {
-        if (accessToken === null) return
-        const data = await getRoles(accessToken)
+        const data = await getRoles()
         setRoles(data)
       } catch {
         toast.error('Could not fetch roles')
       }
     }
     loadRoles()
-  }, [accessToken])
+  }, [])
   if (actor === null) return
   const assignableRoles = roles.filter((role) => canAssignRole(actor, role))
   const handleSubmit = async () => {
     setError('')
-    if (accessToken === null) return
     setIsSubmitting(true)
     try {
-      const updateUser = await changeRole(user.id, selectedRoleId, accessToken)
+      const updateUser = await changeRole(user.id, selectedRoleId)
       onRoleChange(updateUser)
       toast.success('Role changed successfully.')
       onClose()

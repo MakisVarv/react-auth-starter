@@ -1,7 +1,6 @@
 /** @import { User } from '../types.js' */
 
 import { useState } from 'react'
-import { useAuth } from '../../auth/hooks/useAuth.js'
 import { deleteUser } from '../userService.js'
 import { toast } from 'sonner'
 import { AppError } from '../../../shared/api/errors.js'
@@ -16,13 +15,11 @@ import { AppError } from '../../../shared/api/errors.js'
 function DeleteUserModal({ user, onClose, onDeleted }) {
   const [error, setError] = useState('')
   const [isDeleting, setIsDeleting] = useState(false)
-  const { accessToken } = useAuth()
   const handleDelete = async () => {
     try {
       setError('')
-      if (accessToken === null) return
       setIsDeleting(true)
-      await deleteUser(user.id, accessToken)
+      await deleteUser(user.id)
       toast.success('User deleted successfully!')
       onDeleted()
     } catch (e) {

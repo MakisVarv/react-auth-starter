@@ -4,7 +4,6 @@ import UserForm from '../components/UserForm.jsx'
 import { Link, useNavigate } from 'react-router-dom'
 import { AppError } from '../../../shared/api/errors'
 import { toast } from 'sonner'
-import { useAuth } from '../../auth/hooks/useAuth'
 import { useParams } from 'react-router-dom'
 import { editUser, getUser } from '../userService'
 function EditUserPage() {
@@ -15,7 +14,6 @@ function EditUserPage() {
     phone: '',
   })
   const { userId } = useParams()
-  const { accessToken } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [loadError, setLoadError] = useState('')
@@ -24,10 +22,10 @@ function EditUserPage() {
 
   useEffect(() => {
     async function loadUser() {
-      if (!userId || accessToken === null) return
+      if (!userId) return
       try {
         setIsLoading(true)
-        const data = await getUser(userId, accessToken)
+        const data = await getUser(userId)
         setForm({
           first_name: data.first_name,
           last_name: data.last_name,
@@ -45,7 +43,7 @@ function EditUserPage() {
       }
     }
     loadUser()
-  }, [userId, accessToken])
+  }, [userId])
   /** @param {ChangeEvent<HTMLInputElement>} e */
   function handleChange(e) {
     const { name, value } = e.target
@@ -66,11 +64,10 @@ function EditUserPage() {
       ...form,
       phone: form.phone.trim() || null,
     }
-    if (accessToken === null) return
     if (!userId) return
     setIsSubmitting(true)
     try {
-      await editUser(userId, payload, accessToken)
+      await editUser(userId, payload)
       toast.success('User updated successfully.')
       navigate('/users', { replace: true })
     } catch (e) {
