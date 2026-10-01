@@ -14,7 +14,7 @@ import {
   refresh,
   getCurrentUser,
 } from '../features/auth/authService'
-
+import { notifySessionExpired } from '../shared/auth/sessionEvents'
 vi.mock('../features/auth/authService', () => ({
   login: vi.fn(),
   logout: vi.fn(),
@@ -83,6 +83,23 @@ describe('AuthProvider session restoration', () => {
     clearAccessToken()
   })
 
+  it('clears the authenticated session when session expiration is notified', async () => {
+    vi.mocked(refresh).mockResolvedValue('restored-token')
+    vi.mocked(getCurrentUser).mockResolvedValue(testUser)
+
+    renderProvider()
+
+    expect(await screen.findByText('test@example.com')).toBeInTheDocument()
+    expect(getAccessToken()).toBe('restored-token')
+
+    notifySessionExpired()
+
+    await waitFor(() => {
+      expect(screen.getByText('Anonymous')).toBeInTheDocument()
+    })
+
+    expect(getAccessToken()).toBeNull()
+  })
   it('restores the authenticated session when refresh succeeds', async () => {
     vi.mocked(refresh).mockResolvedValue('restored-token')
     vi.mocked(getCurrentUser).mockResolvedValue(testUser)

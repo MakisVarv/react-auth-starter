@@ -8,7 +8,7 @@ import {
   setAccessToken,
 } from '../shared/api/accessTokenStore'
 import { refreshAccessToken } from '../shared/api/tokenRefresh'
-
+import { subscribeToSessionExpired } from '../shared/auth/sessionEvents'
 vi.mock('../shared/api/tokenRefresh', () => ({
   refreshAccessToken: vi.fn(),
 }))
@@ -18,9 +18,53 @@ describe('apiClient transparent refresh', () => {
     vi.clearAllMocks()
     clearAccessToken()
   })
+  it('does not expire the session when refresh fails because of a network error', async () => {
+    setAccessToken('expired-token')
+
+    vi.mocked(refreshAccessToken).mockRejectedValue(
+      new axios.AxiosError('Network Error', 'ERR_NETWORK'),
+    )
+
+    const onSessionExpired = vi.fn()
+    const unsubscribe = subscribeToSessionExpired(onSessionExpired)
+
+    apiClient.defaults.adapter = vi.fn(async (config) => {
+      throw new axios.AxiosError(
+        'Request failed with status code 401',
+        'ERR_BAD_REQUEST',
+        config,
+        null,
+        {
+          status: 401,
+          statusText: 'Unauthorized',
+          headers: {},
+          config,
+          data: {
+            message: 'Access token expired.',
+            code: 'access_token_expired',
+          },
+        },
+      )
+    })
+
+    try {
+      await expect(apiClient.get('/protected')).rejects.toMatchObject({
+        name: 'AppError',
+        message: 'Unable to connect to the server.',
+        status: null,
+      })
+
+      expect(getAccessToken()).toBe('expired-token')
+      expect(onSessionExpired).not.toHaveBeenCalled()
+    } finally {
+      unsubscribe()
+    }
+  })
   it('clears the access token and surfaces the refresh failure when refresh fails', async () => {
     setAccessToken('expired-token')
 
+    const onSessionExpired = vi.fn()
+    const unsubscribe = subscribeToSessionExpired(onSessionExpired)
     vi.mocked(refreshAccessToken).mockRejectedValue(
       new axios.AxiosError(
         'Request failed with status code 401',
@@ -66,9 +110,10 @@ describe('apiClient transparent refresh', () => {
       message: 'Refresh token expired.',
       status: 401,
     })
-
+    expect(onSessionExpired).toHaveBeenCalledOnce()
     expect(refreshAccessToken).toHaveBeenCalledOnce()
     expect(getAccessToken()).toBeNull()
+    unsubscribe()
   })
   it('clears the expired access token when refresh is unavailable', async () => {
     setAccessToken('expired-token')
