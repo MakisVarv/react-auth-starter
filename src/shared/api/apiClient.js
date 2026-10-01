@@ -1,3 +1,9 @@
+/**
+ * @typedef {import('axios').InternalAxiosRequestConfig & {
+ *   _retry?: boolean,
+ *   _usesManagedAccessToken?: boolean
+ * }} ApiRequestConfig
+ */
 import axios from 'axios'
 import { AppError } from './errors'
 import {
@@ -29,15 +35,18 @@ function getFirstValidationError(errors) {
 
   return null
 }
-apiClient.interceptors.request.use((config) => {
-  const token = getAccessToken()
+apiClient.interceptors.request.use(
+  /** @param {ApiRequestConfig} config */ (config) => {
+    const token = getAccessToken()
 
-  if (token && !config.headers.Authorization) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
+    if (token && !config.headers.Authorization) {
+      config.headers.Authorization = `Bearer ${token}`
+      config._usesManagedAccessToken = true
+    }
 
-  return config
-})
+    return config
+  },
+)
 apiClient.interceptors.response.use(
   (response) => response,
 
