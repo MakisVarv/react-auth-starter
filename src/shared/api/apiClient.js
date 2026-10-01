@@ -1,6 +1,10 @@
 import axios from 'axios'
 import { AppError } from './errors'
-import { getAccessToken, setAccessToken } from './accessTokenStore'
+import {
+  clearAccessToken,
+  getAccessToken,
+  setAccessToken,
+} from './accessTokenStore'
 import { refreshAccessToken } from './tokenRefresh'
 
 const apiClient = axios.create({
@@ -47,11 +51,26 @@ apiClient.interceptors.response.use(
       !originalRequest._retry
     if (shouldAttemptRefresh) {
       originalRequest._retry = true
-      const newAccessToken = await refreshAccessToken()
-      if (newAccessToken !== null) {
-        setAccessToken(newAccessToken)
-        originalRequest.headers.delete('Authorization')
-        return apiClient(originalRequest)
+      try {
+        const newAccessToken = await refreshAccessToken()
+        if (newAccessToken !== null) {
+          setAccessToken(newAccessToken)
+          originalRequest.headers.delete('Authorization')
+          return apiClient(originalRequest)
+        }
+      } catch (refreshError) {
+        clearAccessToken()
+        if (axios.isAxiosError(refreshError)) {
+          const refreshStatus = refreshError.response?.status ?? null
+          const refreshErrors = refreshError.response?.data?.errors ?? null
+          const refreshMessage =
+            getFirstValidationError(refreshErrors) ??
+            refreshError.response?.data?.message ??
+            (refreshError.response
+              ? 'Request failed. Please try again.'
+              : 'Unable to connect to the server.')
+          throw new AppError(refreshMessage, refreshStatus, refreshErrors)
+        }
       }
     }
     const message =
