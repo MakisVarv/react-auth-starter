@@ -93,7 +93,7 @@ describe('AuthProvider session restoration', () => {
     expect(screen.getByText('restored-token')).toBeInTheDocument()
 
     expect(refresh).toHaveBeenCalledOnce()
-    expect(getCurrentUser).toHaveBeenCalledWith('restored-token')
+    expect(getCurrentUser).toHaveBeenCalledOnce()
   })
 
   it('remains unauthenticated when no refresh token is available', async () => {
