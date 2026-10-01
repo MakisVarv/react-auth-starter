@@ -34,11 +34,16 @@ export function AuthProvider({ children }) {
       setIsAuthLoading(true)
       try {
         const token = await refresh()
+
         if (!token) {
           clearAccessToken()
           return
         }
+
+        setAccessToken(token)
+
         const user = await getCurrentUser()
+
         setUser(user)
         setAccessTokenState(token)
         setAccessToken(token)
