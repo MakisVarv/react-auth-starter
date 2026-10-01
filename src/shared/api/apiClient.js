@@ -71,6 +71,7 @@ apiClient.interceptors.response.use(
               : 'Unable to connect to the server.')
           throw new AppError(refreshMessage, refreshStatus, refreshErrors)
         }
+        throw refreshError
       }
     }
     const message =
