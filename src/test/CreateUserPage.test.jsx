@@ -5,7 +5,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import CreateUserPage from '../features/users/pages/CreateUserPage'
 import { getRoles } from '../features/access-control/services/roleService'
 import { useAuth } from '../features/auth/hooks/useAuth'
-import { createUser } from '../features/users/userService'
 import { AppError } from '../shared/api/errors'
 
 vi.mock('../features/access-control/services/roleService', () => ({
