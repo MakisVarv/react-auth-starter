@@ -96,12 +96,12 @@ function DeleteUserModal({ user, onClose, onDeleted }) {
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="delete-role-title"
+        aria-labelledby="delete-user-title"
         className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl"
       >
         <div>
           <h2
-            id="delete-role-title"
+            id="delete-user-title"
             className="text-xl font-semibold text-slate-900"
           >
             Delete User
