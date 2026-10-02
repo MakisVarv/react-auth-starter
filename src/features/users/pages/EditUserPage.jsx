@@ -51,6 +51,9 @@ function EditUserPage() {
       }
     }
     loadUser()
+    return () => {
+      controller.abort()
+    }
   }, [userId, userRefreshKey])
   /** @param {ChangeEvent<HTMLInputElement>} e */
   function handleChange(e) {
