@@ -21,10 +21,11 @@ import { ChangePasswordPage } from './features/auth/pages/ChangePasswordPage'
 import { ChangeEmailPage } from './features/auth/pages/ChangeEmailPage'
 import { LogoutAllPage } from './features/auth/pages/LogoutAllPage'
 import SecurityPageLayout from './features/auth/components/SecurityPageLayout'
-
+import { NotFoundPage } from './pages/NotFoundPage'
 function App() {
   return (
     <Routes>
+      <Route path="*" element={<NotFoundPage />} />
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route
