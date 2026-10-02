@@ -7,7 +7,7 @@ import App from './App.jsx'
 import { Toaster } from 'sonner'
 import { AuthProvider } from './features/auth/context/AuthProvider'
 import AuthGate from './features/auth/components/AuthGate'
-
+import { AppErrorBoundary } from './shared/components/errors/AppErrorBoundary'
 const rootElement = document.getElementById('root')
 
 if (!rootElement) {
@@ -16,13 +16,15 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <BrowserRouter>
-      <Toaster />
-      <AuthProvider>
-        <AuthGate>
-          <App />
-        </AuthGate>
-      </AuthProvider>
-    </BrowserRouter>
+    <AppErrorBoundary>
+      <BrowserRouter>
+        <Toaster />
+        <AuthProvider>
+          <AuthGate>
+            <App />
+          </AuthGate>
+        </AuthProvider>
+      </BrowserRouter>
+    </AppErrorBoundary>
   </StrictMode>,
 )
