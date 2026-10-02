@@ -22,6 +22,7 @@ function UserDetailsPage() {
   const canChangeRole = hasPermission(currentUser, 'user.change_role')
   const canDeleteUser = hasPermission(currentUser, 'user.delete')
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [userRefreshKey, setUserRefreshKey] = useState(0)
   const navigate = useNavigate()
   useEffect(() => {
     async function loadUser() {
@@ -42,7 +43,7 @@ function UserDetailsPage() {
       }
     }
     loadUser()
-  }, [userId])
+  }, [userId, userRefreshKey])
   if (currentUser === null) return
 
   const handleModalClose = () => {
@@ -90,7 +91,10 @@ function UserDetailsPage() {
         </Link>
 
         {isLoading && (
-          <div className="flex items-center justify-center gap-3 p-8 text-sm text-slate-500">
+          <div
+            role="status"
+            className="flex items-center justify-center gap-3 p-8 text-sm text-slate-500"
+          >
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-slate-300 border-t-slate-700" />
             <span>Loading user...</span>
           </div>
@@ -101,10 +105,19 @@ function UserDetailsPage() {
           </div>
         )}
         {!loadError && !isLoading && user == null && (
-          <div className="flex flex-col items-center justify-center p-10 text-center">
-            <p className="text-sm font-medium text-slate-700">
-              User not found!
-            </p>
+          <div
+            role="alert"
+            className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-red-100 bg-red-50 p-6 text-center"
+          >
+            <p className="text-sm font-medium text-red-700">{loadError}</p>
+
+            <button
+              type="button"
+              onClick={() => setUserRefreshKey((current) => current + 1)}
+              className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-300"
+            >
+              Try again
+            </button>
           </div>
         )}
         {!loadError && !isLoading && user != null && (

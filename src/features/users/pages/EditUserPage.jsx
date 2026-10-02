@@ -18,12 +18,14 @@ function EditUserPage() {
   const [error, setError] = useState('')
   const [loadError, setLoadError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [userRefreshKey, setUserRefreshKey] = useState(0)
   const navigate = useNavigate()
 
   useEffect(() => {
     async function loadUser() {
       if (!userId) return
       try {
+        setLoadError('')
         setIsLoading(true)
         const data = await getUser(userId)
         setForm({
@@ -43,7 +45,7 @@ function EditUserPage() {
       }
     }
     loadUser()
-  }, [userId])
+  }, [userId, userRefreshKey])
   /** @param {ChangeEvent<HTMLInputElement>} e */
   function handleChange(e) {
     const { name, value } = e.target
@@ -90,14 +92,28 @@ function EditUserPage() {
           ← Back to Users
         </Link>
         {isLoading && (
-          <div className="flex items-center justify-center gap-3 p-8 text-sm text-slate-500">
+          <div
+            role="status"
+            className="flex items-center justify-center gap-3 p-8 text-sm text-slate-500"
+          >
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-slate-300 border-t-slate-700" />
-            <span>Loading user</span>
+            <span>Loading user...</span>
           </div>
         )}
         {loadError && (
-          <div className="p-8 text-center text-sm text-red-500">
-            {loadError}
+          <div
+            role="alert"
+            className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-red-100 bg-red-50 p-6 text-center"
+          >
+            <p className="text-sm font-medium text-red-700">{loadError}</p>
+
+            <button
+              type="button"
+              onClick={() => setUserRefreshKey((current) => current + 1)}
+              className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-300"
+            >
+              Try again
+            </button>
           </div>
         )}
         {!loadError && !isLoading && (

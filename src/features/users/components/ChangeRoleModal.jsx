@@ -1,7 +1,7 @@
 /** @import { User } from '../types.js' */
 /** @import { Role } from '../../access-control/types.js' */
 /** @import {ChangeEvent } from 'react'*/
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../../auth/hooks/useAuth.js'
 import { getRoles } from '../../access-control/services/roleService.js'
 import { toast } from 'sonner'
@@ -17,11 +17,15 @@ import { canAssignRole } from '../../access-control/authorization.js'
  * }} props
  */
 function ChangeRoleModal({ user, onClose, onRoleChange }) {
+  const roleSelectRef = useRef(/** @type {HTMLSelectElement | null} */ (null))
   const { user: actor } = useAuth()
   const [roles, setRoles] = useState(/** @type {Role[]} */ ([]))
   const [selectedRoleId, setSelectedRoleId] = useState(user.role.id)
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  useEffect(() => {
+    roleSelectRef.current?.focus()
+  }, [])
   useEffect(() => {
     async function loadRoles() {
       try {
@@ -63,10 +67,16 @@ function ChangeRoleModal({ user, onClose, onRoleChange }) {
       <div
         role="dialog"
         aria-modal="true"
+        aria-labelledby="change-role-title"
         className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl"
       >
         <div>
-          <h2 className="text-xl font-semibold text-slate-900">Change Role</h2>
+          <h2
+            id="change-role-title"
+            className="text-xl font-semibold text-slate-900"
+          >
+            Change Role
+          </h2>
 
           <p className="mt-1 text-sm text-slate-500">
             Change the role assigned to {user.first_name} {user.last_name}.
@@ -95,6 +105,7 @@ function ChangeRoleModal({ user, onClose, onRoleChange }) {
             id="role_id"
             name="role_id"
             value={selectedRoleId}
+            ref={roleSelectRef}
             onChange={handleChange}
             className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           >
