@@ -18,14 +18,60 @@ import { canAssignRole } from '../../access-control/authorization.js'
  */
 function ChangeRoleModal({ user, onClose, onRoleChange }) {
   const roleSelectRef = useRef(/** @type {HTMLSelectElement | null} */ (null))
+  const dialogRef = useRef(/** @type {HTMLDivElement | null} */ (null))
   const { user: actor } = useAuth()
   const [roles, setRoles] = useState(/** @type {Role[]} */ ([]))
   const [selectedRoleId, setSelectedRoleId] = useState(user.role.id)
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+
   useEffect(() => {
     roleSelectRef.current?.focus()
   }, [])
+  useEffect(() => {
+    /** @param {KeyboardEvent} event */
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        onClose()
+        return
+      }
+
+      if (event.key !== 'Tab') {
+        return
+      }
+
+      const focusableElements = dialogRef.current?.querySelectorAll(
+        'button:not([disabled]), select:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+      )
+
+      const firstElement = focusableElements?.[0]
+      const lastElement = focusableElements?.[focusableElements.length - 1]
+
+      if (
+        !(firstElement instanceof HTMLElement) ||
+        !(lastElement instanceof HTMLElement)
+      ) {
+        return
+      }
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault()
+        lastElement.focus()
+        return
+      }
+
+      if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault()
+        firstElement.focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [onClose])
   useEffect(() => {
     async function loadRoles() {
       try {
@@ -62,9 +108,11 @@ function ChangeRoleModal({ user, onClose, onRoleChange }) {
     const { value } = e.target
     setSelectedRoleId(value)
   }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="change-role-title"
