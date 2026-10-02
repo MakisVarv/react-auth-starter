@@ -8,7 +8,8 @@ import { canManageUser } from '../../access-control/authorization.js'
  *   actor:User,
  *   users: User[],
  *   sort: string,
- *   canEditUser:boolean,
+ *   canEditUser:boolean,  
+ *   updatingUserIds: Set<string>,
  *   onSort: (field: string) => void
  *   onStatusChange: (user: User) => Promise<void>
  * }} props
@@ -17,6 +18,7 @@ function UsersTable({
   actor,
   users,
   canEditUser,
+  updatingUserIds,
   sort,
   onSort,
   onStatusChange,
@@ -125,6 +127,7 @@ function UsersTable({
                         Edit
                       </Link>
                       <button
+                        disabled={updatingUserIds.has(user.id)}
                         onClick={() => onStatusChange(user)}
                         className={`inline-flex items-center rounded-lg 
                         px-4 py-2 text-sm 
@@ -133,6 +136,7 @@ function UsersTable({
                         transition 
                         focus:outline-none 
                         focus:ring-2
+                        disabled:cursor-not-allowed disabled:opacity-50
                         ${
                           user.is_active
                             ? 'bg-red-800 hover:bg-red-700 focus:ring-red-300'

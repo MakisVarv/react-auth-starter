@@ -29,6 +29,9 @@ function UsersPage() {
   const [roles, setRoles] = useState(/** @type {Role[]} */ ([]))
   const [isActive, setIsActive] = useState('')
   const [refreshKey, setRefreshKey] = useState(0)
+  const [updatingUserIds, setUpdatingUserIds] = useState(
+    /** @type {Set<string>} */ (new Set()),
+  )
   const hasFilters = search !== '' || role !== '' || isActive !== ''
   const canCreateUser = hasPermission(user, 'user.create')
   const canEditUser = hasPermission(user, 'user.update')
@@ -69,7 +72,7 @@ function UsersPage() {
         if (e instanceof AppError) {
           setError(e.message)
         } else {
-          toast.error('Something went wrong. Please try again.')
+          setError('Something went wrong. Please try again.')
         }
       } finally {
         setIsLoading(false)
@@ -99,6 +102,11 @@ function UsersPage() {
       setError('')
       await changeUserStatus(user.id, !user.is_active)
       setRefreshKey((current) => current + 1)
+      setUpdatingUserIds((current) => {
+        const next = new Set(current)
+        next.add(user.id)
+        return next
+      })
       toast.success(
         user.is_active
           ? 'User deactivated successfully'
@@ -110,6 +118,12 @@ function UsersPage() {
       } else {
         toast.error('Something went wrong. Please try again.')
       }
+    } finally {
+      setUpdatingUserIds((current) => {
+        const next = new Set(current)
+        next.delete(user.id)
+        return next
+      })
     }
   }
   return (
@@ -184,13 +198,29 @@ function UsersPage() {
             </select>
           </div>
           {isLoading && (
-            <div className="flex items-center justify-center gap-3 p-8 text-sm text-slate-500">
+            <div
+              role="status"
+              className="flex items-center justify-center gap-3 p-8 text-sm text-slate-500"
+            >
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-slate-300 border-t-slate-700" />
               <span>Loading users...</span>
             </div>
           )}
           {error && (
-            <div className="p-8 text-center text-sm text-red-500">{error}</div>
+            <div
+              role="alert"
+              className="flex flex-col items-center justify-center gap-3 p-8 text-center"
+            >
+              <p className="text-sm font-medium text-red-600">{error}</p>
+
+              <button
+                type="button"
+                onClick={() => setRefreshKey((current) => current + 1)}
+                className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-300"
+              >
+                Try again
+              </button>
+            </div>
           )}
           {!error && !isLoading && users.length === 0 && !hasFilters && (
             <div className="flex flex-col items-center justify-center p-10 text-center">
@@ -228,6 +258,7 @@ function UsersPage() {
                   canEditUser={canEditUser}
                   users={users}
                   sort={sort}
+                  updatingUserIds={updatingUserIds}
                   onSort={handleSort}
                   onStatusChange={handleStatusChange}
                 />
