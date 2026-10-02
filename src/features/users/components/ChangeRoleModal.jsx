@@ -26,7 +26,15 @@ function ChangeRoleModal({ user, onClose, onRoleChange }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
+    const previouslyFocusedElement = document.activeElement
+
     roleSelectRef.current?.focus()
+
+    return () => {
+      if (previouslyFocusedElement instanceof HTMLElement) {
+        previouslyFocusedElement.focus()
+      }
+    }
   }, [])
   useEffect(() => {
     /** @param {KeyboardEvent} event */
