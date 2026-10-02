@@ -16,11 +16,14 @@ export async function getUsers(params, signal) {
 }
 /**
  * @param {string} userId
+ * @param {AbortSignal} [signal]
  * @returns {Promise<User>}
  */
+export async function getUser(userId, signal) {
+  const response = await apiClient.get(`/users/${userId}`, {
+    signal,
+  })
 
-export async function getUser(userId) {
-  const response = await apiClient.get(`/users/${userId}`)
   return response.data
 }
 /**

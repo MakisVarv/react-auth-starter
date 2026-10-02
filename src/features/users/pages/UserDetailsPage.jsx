@@ -15,7 +15,8 @@ function UserDetailsPage() {
   const { userId } = useParams()
   const { user: currentUser } = useAuth()
   const [loadError, setLoadError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false)
   const [user, setUser] = useState(/** @type {User | null } */ (null))
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false)
   const canEditUser = hasPermission(currentUser, 'user.update')
@@ -25,24 +26,34 @@ function UserDetailsPage() {
   const [userRefreshKey, setUserRefreshKey] = useState(0)
   const navigate = useNavigate()
   useEffect(() => {
+    const controller = new AbortController()
     async function loadUser() {
       if (!userId) return
       try {
         setLoadError('')
         setIsLoading(true)
-        const data = await getUser(userId)
+        const data = await getUser(userId, controller.signal)
         setUser(data)
       } catch (e) {
+        if (controller.signal.aborted) {
+          return
+        }
+
         if (e instanceof AppError) {
           setLoadError(e.message)
         } else {
           setLoadError('Something went wrong. Please try again.')
         }
       } finally {
-        setIsLoading(false)
+        if (!controller.signal.aborted) {
+          setIsLoading(false)
+        }
       }
     }
     loadUser()
+    return () => {
+      controller.abort()
+    }
   }, [userId, userRefreshKey])
   if (currentUser === null) return
 
@@ -63,6 +74,7 @@ function UserDetailsPage() {
    * @param {User} user
    */
   async function handleStatusChange(user) {
+    setIsUpdatingStatus(true)
     try {
       const updatedUser = await changeUserStatus(user.id, !user.is_active)
       setUser(updatedUser)
@@ -77,6 +89,8 @@ function UserDetailsPage() {
       } else {
         toast.error('Something went wrong. Please try again.')
       }
+    } finally {
+      setIsUpdatingStatus(false)
     }
   }
 
@@ -100,11 +114,6 @@ function UserDetailsPage() {
           </div>
         )}
         {loadError && (
-          <div className="p-8 text-center text-sm text-red-500">
-            {loadError}
-          </div>
-        )}
-        {!loadError && !isLoading && user == null && (
           <div
             role="alert"
             className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-red-100 bg-red-50 p-6 text-center"
@@ -154,16 +163,21 @@ function UserDetailsPage() {
                   {canEditUser && (
                     <button
                       type="button"
+                      disabled={isUpdatingStatus}
                       onClick={() => handleStatusChange(user)}
                       className={`w-22 text-sm  px-3 py-2 font-medium
-                      hover:rounded-lg hover:text-white
+                      hover:rounded-lg hover:text-white disabled:cursor-not-allowed disabled:opacity-50
                       ${
                         user.is_active
                           ? 'hover:bg-red-700 text-red-600'
                           : 'hover:bg-emerald-700 text-emerald-600'
                       }`}
                     >
-                      {user.is_active ? 'Deactivate' : 'Activate'}
+                      {isUpdatingStatus
+                        ? 'Updating...'
+                        : user.is_active
+                          ? 'Deactivate'
+                          : 'Activate'}
                     </button>
                   )}
                   <div className="w-20">

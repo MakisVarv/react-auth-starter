@@ -22,12 +22,13 @@ function EditUserPage() {
   const navigate = useNavigate()
 
   useEffect(() => {
+    const controller = new AbortController()
     async function loadUser() {
       if (!userId) return
       try {
         setLoadError('')
         setIsLoading(true)
-        const data = await getUser(userId)
+        const data = await getUser(userId, controller.signal)
         setForm({
           first_name: data.first_name,
           last_name: data.last_name,
@@ -35,13 +36,18 @@ function EditUserPage() {
           phone: data.phone ?? '',
         })
       } catch (e) {
+        if (controller.signal.aborted) {
+          return
+        }
         if (e instanceof AppError) {
           setLoadError(e.message)
         } else {
           setLoadError('Something went wrong. Please try again.')
         }
       } finally {
-        setIsLoading(false)
+        if (!controller.signal.aborted) {
+          setIsLoading(false)
+        }
       }
     }
     loadUser()
