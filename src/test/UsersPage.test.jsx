@@ -1,4 +1,5 @@
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -8,7 +9,7 @@ import {
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import UsersPage from '../features/users/pages/UsersPage'
-import { getUsers } from '../features/users/userService'
+import { changeUserStatus, getUsers } from '../features/users/userService'
 import { getRoles } from '../features/access-control/services/roleService'
 import { useAuth } from '../features/auth/hooks/useAuth'
 import { AppError } from '../shared/api/errors'
@@ -203,6 +204,179 @@ describe('UsersPage', () => {
     expect(
       screen.getByRole('button', { name: 'Try again' }),
     ).toBeInTheDocument()
+  })
+  it('disables only the user being updated and shows a pending label', async () => {
+    vi.mocked(useAuth).mockReturnValue({
+      user: {
+        id: 'actor-id',
+        email: 'admin@example.com',
+        first_name: 'Admin',
+        last_name: 'User',
+        phone: null,
+        is_active: true,
+        role: {
+          id: 'admin-role-id',
+          name: 'Admin',
+          level: 100,
+          permissions: [{ name: 'user.update' }],
+        },
+      },
+    })
+
+    vi.mocked(getUsers).mockResolvedValue({
+      items: [
+        {
+          id: 'user-1',
+          email: 'john@example.com',
+          first_name: 'John',
+          last_name: 'Doe',
+          phone: null,
+          is_active: true,
+          role: {
+            id: 'user-role-id',
+            name: 'User',
+            level: 10,
+            permissions: [],
+          },
+        },
+        {
+          id: 'user-2',
+          email: 'jane@example.com',
+          first_name: 'Jane',
+          last_name: 'Doe',
+          phone: null,
+          is_active: false,
+          role: {
+            id: 'user-role-id',
+            name: 'User',
+            level: 10,
+            permissions: [],
+          },
+        },
+      ],
+      pagination: {
+        page: 1,
+        page_size: 10,
+        total: 2,
+        total_pages: 1,
+      },
+    })
+
+    vi.mocked(changeUserStatus).mockReturnValue(new Promise(() => {}))
+
+    render(
+      <MemoryRouter>
+        <UsersPage />
+      </MemoryRouter>,
+    )
+
+    const johnRow = (await screen.findByText('john@example.com')).closest('tr')
+    const janeRow = screen.getByText('jane@example.com').closest('tr')
+
+    expect(johnRow).not.toBeNull()
+    expect(janeRow).not.toBeNull()
+
+    const johnButton = within(johnRow).getByRole('button', {
+      name: 'Deactivate',
+    })
+
+    const janeButton = within(janeRow).getByRole('button', {
+      name: 'Activate',
+    })
+
+    fireEvent.click(johnButton)
+
+    expect(
+      within(johnRow).getByRole('button', { name: 'Updating...' }),
+    ).toBeDisabled()
+
+    expect(janeButton).toBeEnabled()
+
+    expect(changeUserStatus).toHaveBeenCalledWith('user-1', false)
+  })
+  it('re-enables the status button when the update fails', async () => {
+    vi.mocked(useAuth).mockReturnValue({
+      user: {
+        id: 'actor-id',
+        email: 'admin@example.com',
+        first_name: 'Admin',
+        last_name: 'User',
+        phone: null,
+        is_active: true,
+        role: {
+          id: 'admin-role-id',
+          name: 'Admin',
+          level: 100,
+          permissions: [{ name: 'user.update' }],
+        },
+      },
+    })
+
+    vi.mocked(getUsers).mockResolvedValue({
+      items: [
+        {
+          id: 'user-1',
+          email: 'john@example.com',
+          first_name: 'John',
+          last_name: 'Doe',
+          phone: null,
+          is_active: true,
+          role: {
+            id: 'user-role-id',
+            name: 'User',
+            level: 10,
+            permissions: [],
+          },
+        },
+      ],
+      pagination: {
+        page: 1,
+        page_size: 10,
+        total: 1,
+        total_pages: 1,
+      },
+    })
+
+    /** @type {(reason?: unknown) => void} */
+    let rejectUpdate
+
+    const pendingUpdate = new Promise((_, reject) => {
+      rejectUpdate = reject
+    })
+
+    vi.mocked(changeUserStatus).mockReturnValue(pendingUpdate)
+
+    render(
+      <MemoryRouter>
+        <UsersPage />
+      </MemoryRouter>,
+    )
+
+    const row = (await screen.findByText('john@example.com')).closest('tr')
+
+    expect(row).not.toBeNull()
+
+    fireEvent.click(
+      within(row).getByRole('button', {
+        name: 'Deactivate',
+      }),
+    )
+
+    expect(
+      within(row).getByRole('button', {
+        name: 'Updating...',
+      }),
+    ).toBeDisabled()
+
+    await act(async () => {
+      rejectUpdate(new Error('Update failed'))
+    })
+
+    expect(
+      await within(row).findByRole('button', {
+        name: 'Deactivate',
+      }),
+    ).toBeEnabled()
   })
   it('shows a loading status while users are being fetched', async () => {
     vi.mocked(getUsers).mockReturnValue(new Promise(() => {}))

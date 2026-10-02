@@ -100,13 +100,13 @@ function UsersPage() {
   async function handleStatusChange(user) {
     try {
       setError('')
-      await changeUserStatus(user.id, !user.is_active)
-      setRefreshKey((current) => current + 1)
       setUpdatingUserIds((current) => {
         const next = new Set(current)
         next.add(user.id)
         return next
       })
+      await changeUserStatus(user.id, !user.is_active)
+      setRefreshKey((current) => current + 1)
       toast.success(
         user.is_active
           ? 'User deactivated successfully'

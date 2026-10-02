@@ -143,7 +143,11 @@ function UsersTable({
                             : 'bg-emerald-800 hover:bg-emerald-700 focus:ring-emerald-300'
                         }`}
                       >
-                        {user.is_active ? 'Deactivate' : 'Activate'}
+                        {updatingUserIds.has(user.id)
+                          ? 'Updating...'
+                          : user.is_active
+                            ? 'Deactivate'
+                            : 'Activate'}
                       </button>
                     </>
                   )}
