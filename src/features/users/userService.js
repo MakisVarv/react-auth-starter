@@ -3,12 +3,14 @@ import apiClient from '../../shared/api/apiClient'
 
 /**
  * @param {UsersQueryParams} params
+ * @param {AbortSignal} [signal]
  * @returns {Promise<UsersResponse>}
  */
 
-export async function getUsers(params) {
+export async function getUsers(params, signal) {
   const response = await apiClient.get('/users/', {
     params,
+    signal,
   })
   return response.data
 }

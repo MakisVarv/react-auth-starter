@@ -54,31 +54,44 @@ function UsersPage() {
     return () => clearTimeout(timeoutId)
   }, [search])
   useEffect(() => {
+    const controller = new AbortController()
     async function loadUsers() {
       try {
         setIsLoading(true)
         setError('')
-        const data = await getUsers({
-          page,
-          page_size: pageSize,
-          search: debouncedSearch,
-          sort,
-          role: role || undefined,
-          is_active: isActive === '' ? undefined : isActive === 'true',
-        })
+        const data = await getUsers(
+          {
+            page,
+            page_size: pageSize,
+            search: debouncedSearch,
+            sort,
+            role: role || undefined,
+            is_active: isActive === '' ? undefined : isActive === 'true',
+          },
+          controller.signal,
+        )
         setUsers(data.items)
         setPagination(data.pagination)
       } catch (e) {
+        if (controller.signal.aborted) {
+          return
+        }
+
         if (e instanceof AppError) {
           setError(e.message)
         } else {
           setError('Something went wrong. Please try again.')
         }
       } finally {
-        setIsLoading(false)
+        if (!controller.signal.aborted) {
+          setIsLoading(false)
+        }
       }
     }
     loadUsers()
+    return () => {
+      controller.abort()
+    }
   }, [page, pageSize, debouncedSearch, isActive, role, sort, refreshKey])
   /**
    * @param {string} field

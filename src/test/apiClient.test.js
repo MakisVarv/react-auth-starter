@@ -117,6 +117,20 @@ describe('apiClient transparent refresh', () => {
       unsubscribe()
     }
   })
+  it('preserves canceled requests instead of normalizing them to AppError', async () => {
+    apiClient.defaults.adapter = vi.fn(async (config) => {
+      throw new axios.CanceledError('Request canceled', config)
+    })
+
+    try {
+      await apiClient.get('/cancelled')
+    } catch (error) {
+      expect(axios.isCancel(error)).toBe(true)
+      return
+    }
+
+    throw new Error('Expected request to be canceled')
+  })
   it('clears the expired access token when refresh is unavailable', async () => {
     setAccessToken('expired-token')
 

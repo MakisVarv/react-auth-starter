@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { deleteUser } from '../userService.js'
 import { toast } from 'sonner'
 import { AppError } from '../../../shared/api/errors.js'
+import { useModalAccessibility } from '../../../shared/hooks/useModalAccessibility.js'
 
 /**
  * @param {{
@@ -17,61 +18,12 @@ function DeleteUserModal({ user, onClose, onDeleted }) {
   const [isDeleting, setIsDeleting] = useState(false)
   const cancelButtonRef = useRef(/** @type {HTMLButtonElement | null} */ (null))
   const dialogRef = useRef(/** @type {HTMLDivElement | null} */ (null))
-  useEffect(() => {
-    const previouslyFocusedElement = document.activeElement
-
-    cancelButtonRef.current?.focus()
-
-    return () => {
-      if (previouslyFocusedElement instanceof HTMLElement) {
-        previouslyFocusedElement.focus()
-      }
-    }
-  }, [])
-  useEffect(() => {
-    /** @param {KeyboardEvent} event */
-    function handleKeyDown(event) {
-      if (event.key === 'Escape') {
-        onClose()
-        return
-      }
-
-      if (event.key !== 'Tab') {
-        return
-      }
-
-      const focusableElements = dialogRef.current?.querySelectorAll(
-        'button:not([disabled]), select:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
-      )
-
-      const firstElement = focusableElements?.[0]
-      const lastElement = focusableElements?.[focusableElements.length - 1]
-
-      if (
-        !(firstElement instanceof HTMLElement) ||
-        !(lastElement instanceof HTMLElement)
-      ) {
-        return
-      }
-
-      if (event.shiftKey && document.activeElement === firstElement) {
-        event.preventDefault()
-        lastElement.focus()
-        return
-      }
-
-      if (!event.shiftKey && document.activeElement === lastElement) {
-        event.preventDefault()
-        firstElement.focus()
-      }
-    }
-
-    document.addEventListener('keydown', handleKeyDown)
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [onClose])
+  useModalAccessibility({
+    dialogRef,
+    initialFocusRef: cancelButtonRef,
+    onClose,
+    canClose: !isDeleting,
+  })
 
   const handleDelete = async () => {
     try {
@@ -122,7 +74,8 @@ function DeleteUserModal({ user, onClose, onDeleted }) {
             type="button"
             ref={cancelButtonRef}
             onClick={onClose}
-            className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+            disabled={isDeleting}
+            className="disabled:cursor-not-allowed disabled:opacity-50 rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
           >
             Cancel
           </button>

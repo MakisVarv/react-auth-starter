@@ -52,6 +52,9 @@ apiClient.interceptors.response.use(
   (response) => response,
 
   async (error) => {
+    if (axios.isCancel(error)) {
+      throw error
+    }
     const status = error.response?.status ?? null
     const errors = error.response?.data?.errors ?? null
     const code = error.response?.data?.code ?? null

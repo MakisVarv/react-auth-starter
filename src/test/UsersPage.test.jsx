@@ -41,6 +41,69 @@ describe('UsersPage', () => {
       },
     })
   })
+  it('aborts the stale users request when filters change', async () => {
+    vi.mocked(getRoles).mockResolvedValue([
+      {
+        id: 'role-1',
+        name: 'Admin',
+        description: 'Administrator',
+        level: 100,
+        permissions: [],
+      },
+    ])
+
+    /** @type {AbortSignal | undefined} */
+    let firstSignal
+
+    vi.mocked(getUsers)
+      .mockImplementationOnce((_, signal) => {
+        firstSignal = signal
+
+        return new Promise((_, reject) => {
+          signal?.addEventListener(
+            'abort',
+            () => {
+              reject(new DOMException('Request aborted', 'AbortError'))
+            },
+            { once: true },
+          )
+        })
+      })
+      .mockResolvedValueOnce({
+        items: [],
+        pagination: {
+          page: 1,
+          page_size: 10,
+          total: 0,
+          total_pages: 0,
+        },
+      })
+
+    render(
+      <MemoryRouter>
+        <UsersPage />
+      </MemoryRouter>,
+    )
+
+    await waitFor(() => {
+      expect(getUsers).toHaveBeenCalledTimes(1)
+    })
+
+    const roleFilter = await screen.findByLabelText('Filter by role')
+
+    fireEvent.change(roleFilter, {
+      target: { value: 'Admin' },
+    })
+
+    await waitFor(() => {
+      expect(getUsers).toHaveBeenCalledTimes(2)
+    })
+
+    expect(firstSignal).toBeDefined()
+    expect(firstSignal?.aborted).toBe(true)
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
   it('shows an error state when fetching users fails', async () => {
     vi.mocked(getUsers).mockRejectedValue(
       new AppError('Could not load users.', 500, null),

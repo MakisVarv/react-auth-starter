@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import { AppError } from '../../../shared/api/errors.js'
 import { changeRole } from '../userService.js'
 import { canAssignRole } from '../../access-control/authorization.js'
-
+import { useModalAccessibility } from '../../../shared/hooks/useModalAccessibility'
 /**
  * @param {{
  *   user:User,
@@ -24,62 +24,12 @@ function ChangeRoleModal({ user, onClose, onRoleChange }) {
   const [selectedRoleId, setSelectedRoleId] = useState(user.role.id)
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  useEffect(() => {
-    const previouslyFocusedElement = document.activeElement
-
-    roleSelectRef.current?.focus()
-
-    return () => {
-      if (previouslyFocusedElement instanceof HTMLElement) {
-        previouslyFocusedElement.focus()
-      }
-    }
-  }, [])
-  useEffect(() => {
-    /** @param {KeyboardEvent} event */
-    function handleKeyDown(event) {
-      if (event.key === 'Escape') {
-        onClose()
-        return
-      }
-
-      if (event.key !== 'Tab') {
-        return
-      }
-
-      const focusableElements = dialogRef.current?.querySelectorAll(
-        'button:not([disabled]), select:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
-      )
-
-      const firstElement = focusableElements?.[0]
-      const lastElement = focusableElements?.[focusableElements.length - 1]
-
-      if (
-        !(firstElement instanceof HTMLElement) ||
-        !(lastElement instanceof HTMLElement)
-      ) {
-        return
-      }
-
-      if (event.shiftKey && document.activeElement === firstElement) {
-        event.preventDefault()
-        lastElement.focus()
-        return
-      }
-
-      if (!event.shiftKey && document.activeElement === lastElement) {
-        event.preventDefault()
-        firstElement.focus()
-      }
-    }
-
-    document.addEventListener('keydown', handleKeyDown)
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [onClose])
+  useModalAccessibility({
+    dialogRef,
+    initialFocusRef: roleSelectRef,
+    onClose,
+    canClose: !isSubmitting,
+  })
   useEffect(() => {
     async function loadRoles() {
       try {
