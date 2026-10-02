@@ -1,6 +1,6 @@
 /** @import { User } from '../types.js' */
 
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { deleteUser } from '../userService.js'
 import { toast } from 'sonner'
 import { AppError } from '../../../shared/api/errors.js'
