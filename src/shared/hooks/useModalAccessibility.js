@@ -17,14 +17,15 @@ export function useModalAccessibility({
   useEffect(() => {
     const previouslyFocusedElement = document.activeElement
 
-    initialFocusRef.current?.focus()
+    const focusTarget = initialFocusRef.current ?? dialogRef.current
+    focusTarget?.focus()
 
     return () => {
       if (previouslyFocusedElement instanceof HTMLElement) {
         previouslyFocusedElement.focus()
       }
     }
-  }, [initialFocusRef])
+  }, [initialFocusRef, dialogRef])
   useEffect(() => {
     /** @param {KeyboardEvent} event */
     function handleKeyDown(event) {
@@ -42,7 +43,11 @@ export function useModalAccessibility({
       const focusableElements = dialogRef.current?.querySelectorAll(
         'button:not([disabled]), select:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
       )
-
+      if (!focusableElements || focusableElements.length === 0) {
+        event.preventDefault()
+        dialogRef.current?.focus()
+        return
+      }
       const firstElement = focusableElements?.[0]
       const lastElement = focusableElements?.[focusableElements.length - 1]
 

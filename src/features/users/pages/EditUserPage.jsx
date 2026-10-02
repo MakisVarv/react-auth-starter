@@ -17,7 +17,7 @@ function EditUserPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [loadError, setLoadError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [userRefreshKey, setUserRefreshKey] = useState(0)
   const navigate = useNavigate()
 
