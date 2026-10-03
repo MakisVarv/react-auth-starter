@@ -122,7 +122,7 @@ function AccessManagementPage() {
     /** @type {string | null} */ (null),
   )
   const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [selectedRoleId, setSelectedRoleId] = useState('')
   const [updatingPermissionId, setUpdatingPermissionId] = useState('')
   const [openRoleMenuId, setOpenRoleMenuId] = useState(
@@ -226,6 +226,31 @@ function AccessManagementPage() {
     }
   }
   /**
+   * @param {string} permissionId
+   */
+  async function removePermission(permissionId) {
+    try {
+      setUpdatingPermissionId(permissionId)
+      const updatedRole = await removePermissionFromRole(
+        selectedRoleId,
+        permissionId,
+      )
+      setRoles((currentRoles) =>
+        currentRoles.map((role) =>
+          role.id === updatedRole.id ? updatedRole : role,
+        ),
+      )
+    } catch (e) {
+      if (e instanceof AppError) {
+        toast.error(e.message)
+      } else {
+        toast.error('Something went wrong. Please try again.')
+      }
+    } finally {
+      setUpdatingPermissionId('')
+    }
+  }
+  /**
    * @param {RoleFormValues} values
    */
   async function handleModalSubmit(values) {
@@ -270,31 +295,6 @@ function AccessManagementPage() {
     }
   }
   /**
-   * @param {string} permissionId
-   */
-  async function removePermission(permissionId) {
-    try {
-      setUpdatingPermissionId(permissionId)
-      const updatedRole = await removePermissionFromRole(
-        selectedRoleId,
-        permissionId,
-      )
-      setRoles((currentRoles) =>
-        currentRoles.map((role) =>
-          role.id === updatedRole.id ? updatedRole : role,
-        ),
-      )
-    } catch (e) {
-      if (e instanceof AppError) {
-        toast.error(e.message)
-      } else {
-        toast.error('Something went wrong. Please try again.')
-      }
-    } finally {
-      setUpdatingPermissionId('')
-    }
-  }
-  /**
    * @param {string} roleId
    */
   async function handleDeleteRole(roleId) {
@@ -322,15 +322,26 @@ function AccessManagementPage() {
   }
   if (isLoading) {
     return (
-      <div className="flex min-h-75 items-center justify-center">
+      <div role="status" className="flex min-h-75 items-center justify-center">
         <p className="text-sm text-slate-500">Loading access management...</p>
       </div>
     )
   }
   if (error) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3">
-        <p className="text-sm text-red-700">{error}</p>
+      <div
+        role="alert"
+        className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-red-100 bg-red-50 p-6 text-center"
+      >
+        <p className="text-sm font-medium text-red-700">{error}</p>
+
+        <button
+          type="button"
+          onClick={loadAccessData}
+          className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-300"
+        >
+          Try again
+        </button>
       </div>
     )
   }
