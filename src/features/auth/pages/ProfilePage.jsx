@@ -143,8 +143,9 @@ function ProfilePage() {
               <>
                 <button
                   type="button"
+                  disabled={isSubmitting}
                   onClick={handleCancel}
-                  className="rounded-lg border border-slate-300 px-4 py-2.5 font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+                  className="disabled:cursor-not-allowed disabled:opacity-50 rounded-lg border border-slate-300 px-4 py-2.5 font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
                 >
                   Cancel
                 </button>
