@@ -160,10 +160,13 @@ describe('AuthProvider session restoration', () => {
 
     expect(getAccessToken()).toBe('login-token')
 
-    expect(loginRequest).toHaveBeenCalledWith({
-      email: 'test@example.com',
-      password: 'Password123!',
-    })
+    expect(loginRequest).toHaveBeenCalledWith(
+      {
+        email: 'test@example.com',
+        password: 'Password123!',
+      },
+      undefined,
+    )
   })
 
   it('clears the session after logout', async () => {
