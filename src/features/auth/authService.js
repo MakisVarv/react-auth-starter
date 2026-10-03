@@ -120,8 +120,9 @@ export async function changePassword(freshAccessToken, newPassword) {
 /**
  * @param {string} freshAccessToken
  * @param {string} newEmail
+ * @param {AbortSignal} [signal]
  */
-export async function changeEmail(freshAccessToken, newEmail) {
+export async function changeEmail(freshAccessToken, newEmail, signal) {
   const response = await apiClient.post(
     '/auth/change-email',
     {
@@ -131,6 +132,7 @@ export async function changeEmail(freshAccessToken, newEmail) {
       headers: {
         Authorization: `Bearer ${freshAccessToken}`,
       },
+      signal,
     },
   )
 
@@ -138,12 +140,19 @@ export async function changeEmail(freshAccessToken, newEmail) {
 }
 /**
  * @param {string} currentPassword
+ * @param {AbortSignal} [signal]
  * @returns {Promise<{ access_token: string }>}
  */
-export async function reauthenticate(currentPassword) {
-  const response = await apiClient.post('/auth/reauthenticate', {
-    current_password: currentPassword,
-  })
+export async function reauthenticate(currentPassword, signal) {
+  const response = await apiClient.post(
+    '/auth/reauthenticate',
+    {
+      current_password: currentPassword,
+    },
+    {
+      signal,
+    },
+  )
 
   return response.data
 }
