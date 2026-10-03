@@ -62,11 +62,12 @@ export function AuthProvider({ children }) {
   }, [])
   /**
    * @param {LoginCredentials} credentials
+   * @param {AbortSignal} [signal]
    * @returns {Promise<User>}
    */
 
-  async function login(credentials) {
-    const data = await loginRequest(credentials)
+  async function login(credentials, signal) {
+    const data = await loginRequest(credentials, signal)
 
     setAccessToken(data.access_token)
     setUser(data.user)

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 /** @import {ChangeEvent, SubmitEvent } from 'react'*/
 import { useAuth } from '../hooks/useAuth'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -19,15 +19,38 @@ function LoginPage() {
   const [error, setError] = useState('')
   const location = useLocation()
   const from = location.state?.from
+  const requestControllerRef = useRef(
+    /** @type {AbortController | null} */ (null),
+  )
+  useEffect(() => {
+    const controller = new AbortController()
+    requestControllerRef.current = controller
+
+    return () => {
+      controller.abort()
+
+      if (requestControllerRef.current === controller) {
+        requestControllerRef.current = null
+      }
+    }
+  }, [])
   /** @param {SubmitEvent<HTMLFormElement>} e */
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    const controller = requestControllerRef.current
+
+    if (controller === null) {
+      return
+    }
     setIsSubmitting(true)
     try {
-      await login(form)
+      await login(form, controller.signal)
       navigate(from ?? '/', { replace: true })
     } catch (e) {
+      if (controller.signal.aborted) {
+        return
+      }
       if (e instanceof AppError) {
         if (e.status === 401) {
           setError(e.message)
@@ -38,7 +61,9 @@ function LoginPage() {
         toast.error('Something went wrong. Please try again.')
       }
     } finally {
-      setIsSubmitting(false)
+      if (!controller.signal.aborted) {
+        setIsSubmitting(false)
+      }
     }
   }
   /** @param {ChangeEvent<HTMLInputElement>} e */

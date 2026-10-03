@@ -5,10 +5,11 @@ import { getCookie } from '../../shared/utils/cookies'
 
 /**
  * @param {LoginCredentials} credentials
+ * @param {AbortSignal} [signal]
  * @returns {Promise<LoginResponse>}
  */
-export async function login(credentials) {
-  const response = await apiClient.post('/auth/login', credentials)
+export async function login(credentials, signal) {
+  const response = await apiClient.post('/auth/login', credentials, { signal })
 
   return response.data
 }

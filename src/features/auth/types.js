@@ -32,7 +32,7 @@
  * @property {(data: UpdateProfileData) => Promise<User>} updateProfile
  * @property {User | null} user
  * @property {boolean} isAuthLoading
- * @property {(credentials: LoginCredentials) => Promise<User>} login
+ * @property {(credentials: LoginCredentials,signal:AbortSignal) => Promise<User>} login
  * @property {() => Promise<void>} logout
  * @property {() => void} clearSession
  */
