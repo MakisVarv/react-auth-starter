@@ -101,8 +101,9 @@ export async function resetPassword(token, newPassword) {
 /**
  * @param {string} freshAccessToken
  * @param {string} newPassword
+ * @param {AbortSignal} [signal]
  */
-export async function changePassword(freshAccessToken, newPassword) {
+export async function changePassword(freshAccessToken, newPassword, signal) {
   const response = await apiClient.post(
     '/auth/change-password',
     {
@@ -112,6 +113,7 @@ export async function changePassword(freshAccessToken, newPassword) {
       headers: {
         Authorization: `Bearer ${freshAccessToken}`,
       },
+      signal,
     },
   )
 

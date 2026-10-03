@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { FormError } from '../../../shared/components/form/FormError'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { AppError } from '../../../shared/api/errors'
 import { PasswordField } from '../../../shared/components/form/PasswordField'
@@ -17,7 +17,21 @@ export function ChangePasswordPage() {
   const [error, setError] = useState('')
   const navigate = useNavigate()
   const { clearSession } = useAuth()
+  const requestControllerRef = useRef(
+    /** @type {AbortController | null} */ (null),
+  )
+  useEffect(() => {
+    const controller = new AbortController()
+    requestControllerRef.current = controller
 
+    return () => {
+      controller.abort()
+
+      if (requestControllerRef.current === controller) {
+        requestControllerRef.current = null
+      }
+    }
+  }, [])
   /** @param {ChangeEvent<HTMLInputElement>} e */
   function handleChange(e) {
     const { name, value } = e.target
@@ -39,23 +53,40 @@ export function ChangePasswordPage() {
       setError("Passwords don't match!")
       return
     }
+    const controller = requestControllerRef.current
+
+    if (controller === null) {
+      return
+    }
     setIsSubmitting(true)
     try {
-      const reauthData = await reauthenticate(current_password)
+      const reauthData = await reauthenticate(
+        current_password,
+        controller.signal,
+      )
 
       const freshAccessToken = reauthData.access_token
-      const data = await changePassword(freshAccessToken, new_password)
+      const data = await changePassword(
+        freshAccessToken,
+        new_password,
+        controller.signal,
+      )
       toast.success(data.message)
       clearSession()
       navigate('/login', { replace: true })
     } catch (e) {
+      if (controller.signal.aborted) {
+        return
+      }
       if (e instanceof AppError) {
         setError(e.message)
       } else {
         toast.error('Something went wrong. Please try again.')
       }
     } finally {
-      setIsSubmitting(false)
+      if (!controller.signal.aborted) {
+        setIsSubmitting(false)
+      }
     }
   }
 

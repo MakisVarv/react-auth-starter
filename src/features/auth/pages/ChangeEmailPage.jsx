@@ -67,13 +67,18 @@ export function ChangeEmailPage() {
       clearSession()
       navigate('/login', { replace: true })
     } catch (e) {
+      if (controller.signal.aborted) {
+        return
+      }
       if (e instanceof AppError) {
         setError(e.message)
       } else {
         toast.error('Something went wrong. Please try again.')
       }
     } finally {
-      setIsSubmitting(false)
+      if (!controller.signal.aborted) {
+        setIsSubmitting(false)
+      }
     }
   }
 
