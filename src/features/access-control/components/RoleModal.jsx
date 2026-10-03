@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { isProtectedRole, MAX_ROLE_LEVEL } from '../authorization.js'
-
+import { useModalAccessibility } from '../../../shared/hooks/useModalAccessibility'
 /** @import {ChangeEvent, SubmitEvent } from 'react' */
 /** @import {User} from '../../users/types.js' */
 /** @import {Role} from '../types.js' */
@@ -20,6 +20,14 @@ import { isProtectedRole, MAX_ROLE_LEVEL } from '../authorization.js'
  * }} props
  */
 function RoleModal({ actor, action, item, isSubmitting, onSubmit, onClose }) {
+  const dialogRef = useRef(/** @type {HTMLDivElement | null} */ (null))
+  const descriptionRef = useRef(/** @type {HTMLInputElement | null} */ (null))
+  useModalAccessibility({
+    dialogRef,
+    initialFocusRef: descriptionRef,
+    onClose,
+    canClose: !isSubmitting,
+  })
   const [form, setForm] = useState({
     name: item?.name ?? '',
     description: item?.description ?? '',
@@ -64,10 +72,16 @@ function RoleModal({ actor, action, item, isSubmitting, onSubmit, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div
         role="dialog"
+        ref={dialogRef}
+        tabIndex={-1}
         aria-modal="true"
+        aria-labelledby="role-modal-title"
         className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl"
       >
-        <h2 className="text-xl font-semibold text-slate-900">
+        <h2
+          id="role-modal-title"
+          className="text-xl font-semibold text-slate-900"
+        >
           {`${action} Role`}
         </h2>
         {isProtectedEdit && (
@@ -106,6 +120,7 @@ function RoleModal({ actor, action, item, isSubmitting, onSubmit, onClose }) {
           </label>
 
           <input
+            ref={descriptionRef}
             id="description"
             name="description"
             value={form.description}
@@ -146,8 +161,9 @@ function RoleModal({ actor, action, item, isSubmitting, onSubmit, onClose }) {
           <div className="mt-8 flex items-center justify-end gap-3">
             <button
               type="button"
+              disabled={isSubmitting}
               onClick={onClose}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+              className="disabled:cursor-not-allowed disabled:opacity-50 rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
             >
               Cancel
             </button>
@@ -157,7 +173,13 @@ function RoleModal({ actor, action, item, isSubmitting, onSubmit, onClose }) {
               disabled={isSubmitting || !isFormValid}
               className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {action === 'Create' ? 'Create' : 'Save Changes'}
+              {isSubmitting
+                ? action === 'Create'
+                  ? 'Creating...'
+                  : 'Saving...'
+                : action === 'Create'
+                  ? 'Create'
+                  : 'Save Changes'}
             </button>
           </div>
         </form>

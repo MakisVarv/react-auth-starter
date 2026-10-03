@@ -25,6 +25,7 @@ import {
   useDroppable,
 } from '@dnd-kit/core'
 import { GripVertical } from 'lucide-react'
+import DeleteRoleModal from '../components/DeleteRoleModal.jsx'
 /** @import { Role } from '../types.js' */
 /** @import { Permission } from '../types.js' */
 /** @import { ReactNode } from 'react'*/
@@ -127,6 +128,10 @@ function AccessManagementPage() {
   const [updatingPermissionId, setUpdatingPermissionId] = useState('')
   const [openRoleMenuId, setOpenRoleMenuId] = useState(
     /** @type {string | null} */ (null),
+  )
+  const [isDeletingRole, setIsDeletingRole] = useState(false)
+  const [roleToDelete, setRoleToDelete] = useState(
+    /** @type {Role | null} */ (null),
   )
   const canCreateRole = hasPermission(user, 'role.create')
   const canEditRole = hasPermission(user, 'role.update')
@@ -294,10 +299,11 @@ function AccessManagementPage() {
       setIsSubmitting(false)
     }
   }
-  /**
-   * @param {string} roleId
-   */
-  async function handleDeleteRole(roleId) {
+  async function handleDeleteRole() {
+    if (roleToDelete === null) return
+
+    const roleId = roleToDelete.id
+    setIsDeletingRole(true)
     try {
       await deleteRole(roleId)
 
@@ -310,6 +316,7 @@ function AccessManagementPage() {
       }
 
       setOpenRoleMenuId(null)
+      setRoleToDelete(null)
 
       toast.success('Role deleted successfully.')
     } catch (e) {
@@ -318,6 +325,8 @@ function AccessManagementPage() {
       } else {
         toast.error('Something went wrong. Please try again.')
       }
+    } finally {
+      setIsDeletingRole(false)
     }
   }
   if (isLoading) {
@@ -455,7 +464,7 @@ function AccessManagementPage() {
                             !isProtectedRole(role) && (
                               <button
                                 type="button"
-                                onClick={() => handleDeleteRole(role.id)}
+                                onClick={() => setRoleToDelete(role)}
                                 className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-red-600 transition hover:bg-red-50"
                               >
                                 <Trash2 size={15} />
@@ -598,6 +607,14 @@ function AccessManagementPage() {
               isSubmitting={isSubmitting}
               onSubmit={handleModalSubmit}
               onClose={handleModalClose}
+            />
+          )}
+          {roleToDelete !== null && (
+            <DeleteRoleModal
+              role={roleToDelete}
+              onClose={() => setRoleToDelete(null)}
+              onConfirm={handleDeleteRole}
+              isDeleting={isDeletingRole}
             />
           )}
         </div>
