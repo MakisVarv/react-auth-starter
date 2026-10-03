@@ -1,21 +1,17 @@
 /** @import { Role } from '../types.js' */
 
-import { useRef, useState } from 'react'
-import { toast } from 'sonner'
-import { AppError } from '../../../shared/api/errors.js'
+import { useRef } from 'react'
 import { useModalAccessibility } from '../../../shared/hooks/useModalAccessibility.js'
-import { deleteRole } from '../services/roleService.js'
 
 /**
  * @param {{
  *   role:Role,
  *   onClose:() => void
  *   onConfirm:()=>void
- *   isDeleting:bool
+ *   isDeleting:boolean
  * }} props
  */
 function DeleteRoleModal({ role, onClose, onConfirm, isDeleting }) {
-  const [error, setError] = useState('')
   const cancelButtonRef = useRef(/** @type {HTMLButtonElement | null} */ (null))
   const dialogRef = useRef(/** @type {HTMLDivElement | null} */ (null))
   useModalAccessibility({
@@ -45,11 +41,6 @@ function DeleteRoleModal({ role, onClose, onConfirm, isDeleting }) {
           <p className="mt-1 text-sm text-slate-500">
             Delete Role {role.name}? This action cannot be undone.
           </p>
-          {error && (
-            <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-              {error}
-            </p>
-          )}
         </div>
         <div className="mt-8 flex items-center justify-end gap-3">
           <button

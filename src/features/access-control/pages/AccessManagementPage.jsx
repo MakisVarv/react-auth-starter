@@ -464,7 +464,10 @@ function AccessManagementPage() {
                             !isProtectedRole(role) && (
                               <button
                                 type="button"
-                                onClick={() => setRoleToDelete(role)}
+                                onClick={() => {
+                                  setOpenRoleMenuId(null)
+                                  setRoleToDelete(role)
+                                }}
                                 className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-red-600 transition hover:bg-red-50"
                               >
                                 <Trash2 size={15} />
