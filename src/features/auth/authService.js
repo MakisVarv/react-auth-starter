@@ -160,8 +160,9 @@ export async function reauthenticate(currentPassword, signal) {
 }
 /**
  * @param {string} freshAccessToken
+ * @param {AbortSignal} [signal]
  */
-export async function logoutAll(freshAccessToken) {
+export async function logoutAll(freshAccessToken, signal) {
   const response = await apiClient.post(
     '/auth/logout-all',
     {},
@@ -169,6 +170,7 @@ export async function logoutAll(freshAccessToken) {
       headers: {
         Authorization: `Bearer ${freshAccessToken}`,
       },
+      signal,
     },
   )
 
